@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rekap Absensi - Absensi IRMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+        <!-- 1. CDN Pustaka Resmi Supabase dengan versi stabil -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <header class="bg-emerald-600 text-white shadow-md">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-2 font-bold text-lg">🕌 Absensi IRMA</div>
+        <nav class="flex items-center gap-1 text-sm flex-wrap">
+          <a href="users.html" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Akun</a>
+          <a href="siswa.html" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Siswa</a>
+          <a href="tambah.html" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Input Absensi</a>
+          <a href="edit.html" class="px-3 py-1.5 rounded-lg bg-emerald-700 font-semibold">Rekap</a>
+          <a href="export.html" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Export</a>
+          <button onclick="logout()" class="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 font-semibold transisi">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Rekap Absensi</h1>
+
+      <!-- MODAL EDIT SEDERHANA -->
+      <div id="modal-edit" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-10">
+        <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm">
+          <h2 class="font-semibold text-gray-700 mb-4">Edit Absensi</h2>
+          <form id="form-edit" class="space-y-3">
+            <input type="hidden" id="edit_id" />
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+              <input type="date" id="edit_tanggal" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select id="edit_status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                <option value="Hadir">Hadir</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Izin">Izin</option>
+                <option value="Alfa">Alfa</option>
+              </select>
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg transisi">Update</button>
+              <button type="button" onclick="tutupModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded-lg transisi">Batal</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow border border-gray-100 overflow-x-auto">
+        <table class="w-full text-sm min-w-[600px]">
+          <thead class="bg-emerald-50 text-emerald-800">
+            <tr>
+              <th class="text-left px-4 py-3 font-semibold">Tanggal</th>
+              <th class="text-left px-4 py-3 font-semibold">Nama Siswa</th>
+              <th class="text-left px-4 py-3 font-semibold">Kelas</th>
+              <th class="text-left px-4 py-3 font-semibold">Status</th>
+              <th class="text-right px-4 py-3 font-semibold">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabel-body" class="divide-y divide-gray-100">
+            <tr>
+              <td colspan="5" class="text-center py-6 text-gray-400">Memuat data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    <!-- 2. Skrip Inisialisasi Klien (Harus di atas sebelum digunakan) -->
+    <script src="assets/js/supabase-client.js"></script>
+    <script>
+      async function init() {
+        const session = await requireAuth();
+        if (!session) return;
+        await muatRekap();
+      }
+
+      const warnaStatus = {
+        Hadir: "bg-emerald-100 text-emerald-800",
+        Sakit: "bg-amber-100 text-amber-800",
+        Izin: "bg-blue-100 text-blue-800",
+        Alfa: "bg-red-100 text-red-800",
+      };
+
+      async function muatRekap() {
+        const tbody = document.getElementById("tabel-body");
+        const { data, error } = await supabase.from("tabel_absensi").select("id, tanggal_kegiatan, status_kehadiran, tabel_siswa(nama_siswa, kelas)").order("tanggal_kegiatan", { ascending: false });
+
+        if (error) {
+          tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-red-500">Gagal memuat: ${error.message}</td></tr>`;
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">Belum ada data absensi.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = data
+          .map(
+            (a) => `
+      <tr>
+        <td class="px-4 py-3">${a.tanggal_kegiatan}</td>
+        <td class="px-4 py-3">${escapeHtml(a.tabel_siswa?.nama_siswa || "-")}</td>
+        <td class="px-4 py-3">${escapeHtml(a.tabel_siswa?.kelas || "-")}</td>
+        <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold ${warnaStatus[a.status_kehadiran] || ""}">${a.status_kehadiran}</span></td>
+        <td class="px-4 py-3 text-right space-x-2">
+          <button onclick='bukaModal(${JSON.stringify({ id: a.id, tanggal_kegiatan: a.tanggal_kegiatan, status_kehadiran: a.status_kehadiran })})' class="text-emerald-700 font-semibold hover:underline">Edit</button>
+          <button onclick="hapusAbsensi(${a.id})" class="text-red-600 font-semibold hover:underline">Hapus</button>
+        </td>
+      </tr>
+    `,
+          )
+          .join("");
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      }
+
+      function bukaModal(item) {
+        document.getElementById("edit_id").value = item.id;
+        document.getElementById("edit_tanggal").value = item.tanggal_kegiatan;
+        document.getElementById("edit_status").value = item.status_kehadiran;
+        document.getElementById("modal-edit").classList.remove("hidden");
+      }
+
+      function tutupModal() {
+        document.getElementById("modal-edit").classList.add("hidden");
+      }
+
+      document.getElementById("form-edit").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = document.getElementById("edit_id").value;
+        const tanggal_kegiatan = document.getElementById("edit_tanggal").value;
+        const status_kehadiran = document.getElementById("edit_status").value;
+
+        const { error } = await supabase.from("tabel_absensi").update({ tanggal_kegiatan, status_kehadiran }).eq("id", id);
+        if (error) {
+          alert("Gagal update: " + error.message);
+          return;
+        }
+        tutupModal();
+        muatRekap();
+      });
+
+      async function hapusAbsensi(id) {
+        if (!confirm("Hapus data absensi ini?")) return;
+        const { error } = await supabase.from("tabel_absensi").delete().eq("id", id);
+        if (error) {
+          alert("Gagal menghapus: " + error.message);
+          return;
+        }
+        muatRekap();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

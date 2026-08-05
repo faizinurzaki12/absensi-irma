@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Absensi IRMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body class="bg-emerald-50 min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl border-t-4 border-emerald-600 p-8">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+          <span class="text-white text-2xl">🕌</span>
+        </div>
+        <h1 class="text-xl font-bold text-gray-800">Absensi Siswa IRMA</h1>
+        <p class="text-sm text-gray-500 mt-1">Ikatan Remaja Masjid</p>
+      </div>
+
+      <form id="form-login" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" id="email" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi" placeholder="petugas@masjid.com" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" id="password" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi" placeholder="••••••••" />
+        </div>
+
+        <p id="pesan-error" class="text-sm text-red-600 hidden"></p>
+
+        <button type="submit" id="btn-login" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg transisi">Masuk Sekarang</button>
+      </form>
+
+      <p class="text-xs text-gray-400 text-center mt-6">Akun petugas dibuat oleh admin melalui Supabase Dashboard.</p>
+    </div>
+    <!-- 1. CDN Pustaka Resmi Supabase dengan versi stabil -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+    <!-- 2. Skrip Inisialisasi Klien (Harus di atas sebelum digunakan) -->
+    <script src="assets/js/supabase-client.js"></script>
+    <script>
+      // Sekarang fungsi ini sudah bisa dibaca karena file supabase-client.js dimuat lebih dulu di <head>
+      redirectIfLoggedIn();
+
+      document.getElementById("form-login").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const btn = document.getElementById("btn-login");
+        const pesanError = document.getElementById("pesan-error");
+
+        pesanError.classList.add("hidden");
+        btn.disabled = true;
+        btn.textContent = "Memproses...";
+
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          pesanError.textContent = "Login gagal: " + error.message;
+          pesanError.classList.remove("hidden");
+          btn.disabled = false;
+          btn.textContent = "Masuk Sekarang";
+          return;
+        }
+
+        window.location.href = "siswa.html";
+      });
+    </script>
+  </body>
+</html>

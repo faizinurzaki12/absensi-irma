@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Siswa - Absensi IRMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 1. CDN Pustaka Resmi Supabase dengan versi stabil -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <header class="bg-emerald-600 text-white shadow-md">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-2 font-bold text-lg">🕌 Absensi IRMA</div>
+        <nav class="flex items-center gap-1 text-sm flex-wrap">
+          <a href="users.html" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Akun</a>
+          <a href="siswa.html" class="px-3 py-1.5 rounded-lg bg-emerald-700 font-semibold">Siswa</a>
+          <a href="tambah.html" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Input Absensi</a>
+          <a href="edit.html" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Rekap</a>
+          <a href="export.html" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Export</a>
+          <button onclick="logout()" class="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 font-semibold transisi">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Manajemen Data Siswa</h1>
+
+      <!-- FORM TAMBAH / EDIT -->
+      <div class="bg-white rounded-2xl shadow p-6 border border-gray-100 mb-6">
+        <h2 class="font-semibold text-gray-700 mb-3" id="judul-form">Tambah Siswa Baru</h2>
+        <form id="form-siswa" class="flex flex-col sm:flex-row gap-3">
+          <input type="hidden" id="siswa_id" />
+          <input type="text" id="nama_siswa" required placeholder="Nama siswa" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi" />
+          <input type="text" id="kelas" required placeholder="Kelas (mis. VII-A)" class="w-full sm:w-40 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi" />
+          <button type="submit" id="btn-submit-siswa" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2 rounded-lg transisi whitespace-nowrap">Simpan</button>
+          <button type="button" id="btn-batal" onclick="batalEdit()" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-5 py-2 rounded-lg transisi">Batal</button>
+        </form>
+      </div>
+
+      <!-- TABEL SISWA -->
+      <div class="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-emerald-50 text-emerald-800">
+            <tr>
+              <th class="text-left px-4 py-3 font-semibold">Nama Siswa</th>
+              <th class="text-left px-4 py-3 font-semibold">Kelas</th>
+              <th class="text-right px-4 py-3 font-semibold">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabel-body" class="divide-y divide-gray-100">
+            <tr>
+              <td colspan="3" class="text-center py-6 text-gray-400">Memuat data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    <!-- 1. CDN Pustaka Resmi Supabase dengan versi stabil -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+    <!-- 2. Skrip Inisialisasi Klien (Harus di atas sebelum digunakan) -->
+    <script src="assets/js/supabase-client.js"></script>
+    <script>
+      async function init() {
+        const session = await requireAuth();
+        if (!session) return;
+        await muatDaftarSiswa();
+
+        // Realtime: refresh tabel setiap ada perubahan pada tabel_siswa milik user
+        supabase.channel("realtime-siswa").on("postgres_changes", { event: "*", schema: "public", table: "tabel_siswa" }, muatDaftarSiswa).subscribe();
+      }
+
+      async function muatDaftarSiswa() {
+        const tbody = document.getElementById("tabel-body");
+        const { data, error } = await supabase.from("tabel_siswa").select("*").order("nama_siswa", { ascending: true });
+
+        if (error) {
+          tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-red-500">Gagal memuat: ${error.message}</td></tr>`;
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-gray-400">Belum ada data siswa.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = data
+          .map(
+            (s) => `
+      <tr>
+        <td class="px-4 py-3">${escapeHtml(s.nama_siswa)}</td>
+        <td class="px-4 py-3">${escapeHtml(s.kelas)}</td>
+        <td class="px-4 py-3 text-right space-x-2">
+          <button onclick='mulaiEdit(${JSON.stringify(s)})' class="text-emerald-700 font-semibold hover:underline">Edit</button>
+          <button onclick="hapusSiswa(${s.id})" class="text-red-600 font-semibold hover:underline">Hapus</button>
+        </td>
+      </tr>
+    `,
+          )
+          .join("");
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      }
+
+      document.getElementById("form-siswa").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = document.getElementById("siswa_id").value;
+        const nama_siswa = document.getElementById("nama_siswa").value.trim();
+        const kelas = document.getElementById("kelas").value.trim();
+
+        let error;
+        if (id) {
+          ({ error } = await supabase.from("tabel_siswa").update({ nama_siswa, kelas }).eq("id", id));
+        } else {
+          ({ error } = await supabase.from("tabel_siswa").insert({ nama_siswa, kelas }));
+        }
+
+        if (error) {
+          alert("Gagal menyimpan: " + error.message);
+          return;
+        }
+
+        batalEdit();
+        muatDaftarSiswa();
+      });
+
+      function mulaiEdit(siswa) {
+        document.getElementById("siswa_id").value = siswa.id;
+        document.getElementById("nama_siswa").value = siswa.nama_siswa;
+        document.getElementById("kelas").value = siswa.kelas;
+        document.getElementById("judul-form").textContent = "Edit Siswa";
+        document.getElementById("btn-submit-siswa").textContent = "Update";
+        document.getElementById("btn-batal").classList.remove("hidden");
+      }
+
+      function batalEdit() {
+        document.getElementById("form-siswa").reset();
+        document.getElementById("siswa_id").value = "";
+        document.getElementById("judul-form").textContent = "Tambah Siswa Baru";
+        document.getElementById("btn-submit-siswa").textContent = "Simpan";
+        document.getElementById("btn-batal").classList.add("hidden");
+      }
+
+      async function hapusSiswa(id) {
+        if (!confirm("Hapus data siswa ini? Data absensi terkait juga akan terhapus.")) return;
+        const { error } = await supabase.from("tabel_siswa").delete().eq("id", id);
+        if (error) {
+          alert("Gagal menghapus: " + error.message);
+          return;
+        }
+        muatDaftarSiswa();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

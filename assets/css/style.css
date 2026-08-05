@@ -1,0 +1,23 @@
+/* assets/css/style.css - styling tambahan kecil di luar utility Tailwind */
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Scrollbar tipis warna hijau agar konsisten dengan tema */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #10b981; /* emerald-500 */
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-track {
+  background: #ecfdf5; /* emerald-50 */
+}
+
+/* Transisi halus untuk hover kartu/tombol */
+.transisi {
+  transition: all 0.15s ease-in-out;
+}
