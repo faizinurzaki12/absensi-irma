@@ -38,12 +38,28 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kegiatan</label>
             <input type="date" id="tanggal_kegiatan" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi" />
           </div>
+
+          <!-- Dropdown siswa custom (bukan <select> native) agar arah bukanya selalu ke bawah -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Siswa</label>
-            <select id="siswa_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi">
-              <option value="">Memuat daftar siswa...</option>
-            </select>
+            <div class="relative">
+              <button
+                type="button"
+                id="siswa-trigger"
+                class="w-full flex items-center justify-between border border-gray-300 rounded-lg px-3 py-2 bg-white text-left focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi"
+              >
+                <span id="siswa-label" class="text-gray-400 truncate">Memuat daftar siswa...</span>
+                <svg class="w-4 h-4 text-gray-400 shrink-0 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </button>
+              <input type="hidden" id="siswa_id" required />
+
+              <!-- Panel dropdown: absolute + top-full = selalu nempel & terbuka DI BAWAH tombol -->
+              <div id="siswa-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-56 overflow-y-auto z-20"></div>
+            </div>
           </div>
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Status Kehadiran</label>
             <select id="status_kehadiran" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi">
@@ -63,6 +79,8 @@
     <script src="assets/js/offline-store.js"></script>
     <script src="assets/js/app.js"></script>
     <script>
+      let daftarSiswaCache = [];
+
       async function init() {
         const session = await requireAuth();
         if (!session) return;
@@ -70,19 +88,66 @@
         initNetworkStatus("status-jaringan");
         perbaruiInfoAntrean();
         await muatDaftarSiswa();
+        initDropdownSiswa();
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
       }
 
       async function muatDaftarSiswa() {
-        const select = document.getElementById("siswa_id");
+        const dropdown = document.getElementById("siswa-dropdown");
+        const label = document.getElementById("siswa-label");
         const data = await dbSelect("tabel_siswa");
         data.sort((a, b) => (a.nama_siswa || "").localeCompare(b.nama_siswa || ""));
+        daftarSiswaCache = data;
 
         if (!data || data.length === 0) {
-          select.innerHTML = `<option value="">Belum ada data siswa - tambahkan dulu di menu Siswa</option>`;
+          label.textContent = "Belum ada data siswa";
+          dropdown.innerHTML = `<div class="px-3 py-2 text-sm text-gray-400">Belum ada data siswa - tambahkan dulu di menu Siswa</div>`;
           return;
         }
 
-        select.innerHTML = data.map((s) => `<option value="${s.id}">${s.nama_siswa} - ${s.kelas}${s._pending ? " (belum sinkron)" : ""}</option>`).join("");
+        dropdown.innerHTML = data
+          .map(
+            (s) => `
+      <button type="button" data-id="${s.id}" class="opsi-siswa w-full text-left px-3 py-2 text-sm hover:bg-emerald-50 transisi">
+        ${escapeHtml(s.nama_siswa)} - ${escapeHtml(s.kelas)}${s._pending ? ' <span class="text-xs text-amber-600">(belum sinkron)</span>' : ""}
+      </button>`,
+          )
+          .join("");
+
+        dropdown.querySelectorAll(".opsi-siswa").forEach((btn) => {
+          btn.addEventListener("click", () => pilihSiswa(btn.dataset.id));
+        });
+
+        // Otomatis pilih siswa pertama biar form langsung siap dipakai
+        pilihSiswa(data[0].id);
+      }
+
+      function pilihSiswa(id) {
+        const siswa = daftarSiswaCache.find((s) => String(s.id) === String(id));
+        if (!siswa) return;
+        document.getElementById("siswa_id").value = siswa.id;
+        const label = document.getElementById("siswa-label");
+        label.textContent = `${siswa.nama_siswa} - ${siswa.kelas}`;
+        label.classList.remove("text-gray-400");
+        document.getElementById("siswa-dropdown").classList.add("hidden");
+      }
+
+      function initDropdownSiswa() {
+        const trigger = document.getElementById("siswa-trigger");
+        const dropdown = document.getElementById("siswa-dropdown");
+
+        trigger.addEventListener("click", () => {
+          dropdown.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add("hidden");
+          }
+        });
       }
 
       function perbaruiInfoAntrean() {
@@ -124,7 +189,7 @@
 
         perbaruiInfoAntrean();
         // Tanggal sengaja tidak direset agar mudah input siswa berikutnya di hari yang sama
-        document.getElementById("siswa_id").selectedIndex = 0;
+        if (daftarSiswaCache.length > 0) pilihSiswa(daftarSiswaCache[0].id);
       });
 
       init();
