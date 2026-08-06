@@ -10,25 +10,61 @@ if (!window.supabaseClient) {
 }
 const supabase = window.supabaseClient;
 
+/**
+ * Saat offline, getSession() bisa gagal kalau token perlu di-refresh
+ * ke server. Fallback ini membaca sesi langsung dari localStorage
+ * (tempat supabase-js menyimpan sesi login) supaya petugas tetap
+ * bisa masuk & bekerja walau tidak ada sinyal — SELAMA dia pernah
+ * login minimal sekali sebelumnya saat online.
+ */
+function _bacaSesiOfflineDariStorage() {
+  try {
+    const key = Object.keys(localStorage).find((k) => k.startsWith("sb-") && k.endsWith("-auth-token"));
+    if (!key) return null;
+    const parsed = JSON.parse(localStorage.getItem(key));
+    const sesi = parsed?.currentSession || parsed;
+    if (sesi?.user) return sesi;
+  } catch (e) {
+    /* abaikan, dianggap tidak ada sesi tersimpan */
+  }
+  return null;
+}
+
 // Proteksi halaman (wajib login)
 async function requireAuth() {
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
-  if (error || !session) {
-    window.location.href = "/";
-    return null;
+  try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) return session;
+  } catch (e) {
+    // getSession bisa melempar error saat offline & butuh refresh ke server
   }
-  return session;
+
+  if (!navigator.onLine) {
+    const sesiOffline = _bacaSesiOfflineDariStorage();
+    if (sesiOffline) return sesiOffline;
+  }
+
+  window.location.href = "/";
+  return null;
 }
 
 // Cek sesi di halaman login
 async function redirectIfLoggedIn() {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (session) {
+  try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      window.location.href = "/siswa";
+      return;
+    }
+  } catch (e) {
+    /* lanjut cek fallback di bawah */
+  }
+
+  if (!navigator.onLine && _bacaSesiOfflineDariStorage()) {
     window.location.href = "/siswa";
   }
 }

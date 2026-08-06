@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Input Absensi - Absensi IRMA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-        <!-- 1. CDN Pustaka Resmi Supabase dengan versi stabil -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
@@ -15,9 +14,9 @@
         <div class="flex items-center gap-2 font-bold text-lg">🕌 Absensi IRMA</div>
         <nav class="flex items-center gap-1 text-sm flex-wrap">
           <a href="/users" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Akun</a>
-          <a href="/siswa" class="px-3 py-1.5 rounded-lg bg-emerald-700 font-semibold">Siswa</a>
-          <a href="/tambah" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Input Absensi</a>
-          <a href="/edit" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Rekap</a>
+          <a href="/siswa" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Siswa</a>
+          <a href="/tambah" class="px-3 py-1.5 rounded-lg bg-emerald-700 font-semibold">Input Absensi</a>
+          <a href="/rekap" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Rekap</a>
           <a href="/export" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Export</a>
           <button onclick="logout()" class="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 font-semibold transisi">Logout</button>
         </nav>
@@ -31,7 +30,6 @@
       </div>
 
       <div id="sync-notif" class="hidden mb-4 bg-emerald-50 text-emerald-700 text-sm px-4 py-2 rounded-lg border border-emerald-200"></div>
-
       <div id="antrean-info" class="hidden mb-4 bg-amber-50 text-amber-700 text-sm px-4 py-2 rounded-lg border border-amber-200"></div>
 
       <div class="bg-white rounded-2xl shadow p-6 border border-gray-100">
@@ -43,7 +41,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Siswa</label>
             <select id="siswa_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 transisi">
-              <option value="siswa_id">Memuat daftar siswa...</option>
+              <option value="">Memuat daftar siswa...</option>
             </select>
           </div>
           <div>
@@ -60,36 +58,38 @@
         </form>
       </div>
     </main>
-    <!-- 2. Skrip Inisialisasi Klien (Harus di atas sebelum digunakan) -->
+
     <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/offline-store.js"></script>
     <script src="assets/js/app.js"></script>
     <script>
-      let daftarSiswaCache = [];
-
       async function init() {
         const session = await requireAuth();
         if (!session) return;
 
         initNetworkStatus("status-jaringan");
         perbaruiInfoAntrean();
+        await muatDaftarSiswa();
+      }
 
-        const { data, error } = await supabase.from("tabel_siswa").select("id, nama_siswa, kelas").order("nama_siswa");
+      async function muatDaftarSiswa() {
         const select = document.getElementById("siswa_id");
+        const data = await dbSelect("tabel_siswa");
+        data.sort((a, b) => (a.nama_siswa || "").localeCompare(b.nama_siswa || ""));
 
-        if (error || !data || data.length === 0) {
+        if (!data || data.length === 0) {
           select.innerHTML = `<option value="">Belum ada data siswa - tambahkan dulu di menu Siswa</option>`;
           return;
         }
 
-        daftarSiswaCache = data;
-        select.innerHTML = data.map((s) => `<option value="${s.id}">${s.nama_siswa} - ${s.kelas}</option>`).join("");
+        select.innerHTML = data.map((s) => `<option value="${s.id}">${s.nama_siswa} - ${s.kelas}${s._pending ? " (belum sinkron)" : ""}</option>`).join("");
       }
 
       function perbaruiInfoAntrean() {
         const info = document.getElementById("antrean-info");
         const jumlah = jumlahAntreanOffline();
         if (jumlah > 0) {
-          info.textContent = `⚠️ ${jumlah} data absensi menunggu disinkronkan saat online.`;
+          info.textContent = `⚠️ ${jumlah} perubahan menunggu disinkronkan saat online.`;
           info.classList.remove("hidden");
         } else {
           info.classList.add("hidden");
@@ -111,31 +111,19 @@
           return;
         }
 
+        await dbInsert("tabel_absensi", payload);
+
         pesan.classList.remove("hidden");
-
-        if (!navigator.onLine) {
-          tambahKeAntreanOffline(payload);
-          pesan.textContent = "📴 Offline: data absensi disimpan sementara di perangkat, akan otomatis terkirim saat online.";
-          pesan.className = "text-sm text-amber-600";
-          perbaruiInfoAntrean();
-          // Tanggal sengaja tidak direset agar mudah input siswa berikutnya di hari yang sama
-          document.getElementById("siswa_id").selectedIndex = 0;
-          return;
-        }
-
-        const { error } = await supabase.from("tabel_absensi").insert(payload);
-
-        if (error) {
-          // fallback: kalau gagal karena gangguan koneksi mendadak, simpan ke antrean offline juga
-          tambahKeAntreanOffline(payload);
-          pesan.textContent = "⚠️ Gagal kirim langsung, data diamankan ke antrean offline: " + error.message;
-          pesan.className = "text-sm text-amber-600";
-          perbaruiInfoAntrean();
-        } else {
+        if (navigator.onLine) {
           pesan.textContent = "✅ Absensi berhasil disimpan.";
           pesan.className = "text-sm text-emerald-700";
+        } else {
+          pesan.textContent = "📴 Offline: absensi disimpan di perangkat, akan otomatis terkirim saat online.";
+          pesan.className = "text-sm text-amber-600";
         }
 
+        perbaruiInfoAntrean();
+        // Tanggal sengaja tidak direset agar mudah input siswa berikutnya di hari yang sama
         document.getElementById("siswa_id").selectedIndex = 0;
       });
 
