@@ -51,7 +51,7 @@
 
         pesanError.classList.add("hidden");
         btn.disabled = true;
-        btn.textContent = "Memproses...";
+        btn.textContent = "Tunggu bentar....";
 
         const { error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -63,7 +63,7 @@
           return;
         }
 
-        window.location.href = "siswa.html";
+        window.location.href = "/siswa";
       });
     </script>
   </body>
