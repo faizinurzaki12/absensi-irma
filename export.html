@@ -23,25 +23,132 @@
       </div>
     </header>
 
-    <main class="max-w-lg mx-auto px-4 py-8">
+    <main class="max-w-xl mx-auto px-4 py-6 sm:py-8">
       <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
-        <h1 class="text-2xl font-bold text-gray-800">Export Laporan Absensi</h1>
-        <span id="status-jaringan" class="text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">🌐 Online</span>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Export Laporan Absensi</h1>
+        <span id="status-jaringan" class="text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">🌐 Online</span>
       </div>
 
-      <div class="bg-white rounded-2xl shadow p-6 border border-gray-100 text-center">
-        <p class="text-sm text-gray-500 mb-1">Total Data Absensi Tercatat</p>
-        <p id="total-absensi" class="text-4xl font-bold text-emerald-700 mb-1">-</p>
-        <p id="info-offline" class="hidden text-xs text-amber-600 mb-5">Termasuk data yang belum sinkron ke server</p>
-
-        <div id="peringatan-offline" class="hidden mb-4 bg-red-50 text-red-600 text-sm px-4 py-2 rounded-lg border border-red-200 text-left">
-          📴 Export laporan butuh koneksi internet, supaya data yang diunduh dijamin sudah lengkap & tersinkron dari server. Sambungkan kembali ke internet untuk mengunduh.
+      <div class="bg-white rounded-2xl shadow p-4 sm:p-6 border border-gray-100">
+        
+        <!-- PILIH BULAN & TAHUN -->
+        <div class="mb-5 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+          <label for="filter-bulan" class="block text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1.5">Pilih Bulan & Tahun Statistik</label>
+          <input type="month" id="filter-bulan" class="w-full px-3 py-2 bg-white border border-emerald-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-600">
         </div>
 
-        <button id="btn-export" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transisi disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:bg-gray-300">
+        <!-- KARTU STATISTIK -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
+          <div class="bg-emerald-50 rounded-xl p-3 sm:p-4 text-center">
+            <p id="total-absensi" class="text-2xl sm:text-3xl font-bold text-emerald-700 mb-1">-</p>
+            <p class="text-xs text-gray-500">Total Seluruh Data</p>
+          </div>
+          <div class="bg-emerald-50 rounded-xl p-3 sm:p-4 text-center">
+            <p id="total-bulan-ini" class="text-2xl sm:text-3xl font-bold text-emerald-700 mb-1">-</p>
+            <p id="label-bulan" class="text-xs text-gray-500">Hadir Pilihan</p>
+          </div>
+        </div>
+
+        <!-- INFO SISWA PALING RAJIN KELAS X & XI -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+          <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-3.5 sm:p-4 text-left">
+            <p class="text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1">🌟 TERAJIN KELAS X</p>
+            <p id="top-siswa-x" class="text-sm font-bold text-gray-800">Memuat...</p>
+          </div>
+          <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-4 text-left">
+            <p class="text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1">🌟 TERAJIN KELAS XI</p>
+            <p id="top-siswa-xi" class="text-sm font-bold text-gray-800">Memuat...</p>
+          </div>
+        </div>
+
+        <!-- 1. TABEL REKAP KUMULATIF SELURUH PERIODE -->
+        <div class="mb-6">
+          <h3 class="text-sm font-bold text-gray-700 mb-2">🏆 Rekap Total Kehadiran (Kelas X & XI - Seluruh Periode)</h3>
+          
+          <!-- MOBILE VIEW (CARD) -->
+          <div id="card-rekap-periode" class="block sm:hidden space-y-2 max-h-60 overflow-y-auto pr-1">
+            <p class="text-xs text-gray-400 text-center py-2">Memuat rekap...</p>
+          </div>
+
+          <!-- DESKTOP VIEW (TABLE) -->
+          <div class="hidden sm:block overflow-x-auto border border-gray-100 rounded-xl max-h-60 overflow-y-auto">
+            <table class="w-full text-sm text-left">
+              <thead class="bg-emerald-700 text-white sticky top-0">
+                <tr>
+                  <th class="px-3 py-2 font-medium">Nama Siswa</th>
+                  <th class="px-3 py-2 font-medium">Kelas</th>
+                  <th class="px-3 py-2 font-medium text-center">Total Hadir</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-rekap-periode" class="divide-y divide-gray-100">
+                <tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 2. TABEL REKAP BULANAN -->
+        <div class="mb-6">
+          <h3 id="judul-rekap-bulanan" class="text-sm font-bold text-gray-700 mb-2">📅 Rekap Bulanan Kehadiran (Kelas X & XI)</h3>
+          
+          <!-- MOBILE VIEW (CARD) -->
+          <div id="card-rekap-bulanan" class="block sm:hidden space-y-2 max-h-60 overflow-y-auto pr-1">
+            <p class="text-xs text-gray-400 text-center py-2">Memuat rekap...</p>
+          </div>
+
+          <!-- DESKTOP VIEW (TABLE) -->
+          <div class="hidden sm:block overflow-x-auto border border-gray-100 rounded-xl max-h-60 overflow-y-auto">
+            <table class="w-full text-sm text-left">
+              <thead class="bg-emerald-600 text-white sticky top-0">
+                <tr>
+                  <th class="px-3 py-2 font-medium">Nama Siswa</th>
+                  <th class="px-3 py-2 font-medium">Kelas</th>
+                  <th class="px-3 py-2 font-medium text-center">Jumlah Hadir</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-rekap-bulanan" class="divide-y divide-gray-100">
+                <tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 3. TABEL RINCIAN UMUM -->
+        <div class="mb-6">
+          <h3 class="text-sm font-bold text-gray-700 mb-2">Semua Rincian Data (Bulan Terpilih)</h3>
+          
+          <!-- MOBILE VIEW (CARD) -->
+          <div id="card-rincian-siswa" class="block sm:hidden space-y-2 max-h-60 overflow-y-auto pr-1">
+            <p class="text-xs text-gray-400 text-center py-2">Memuat rincian...</p>
+          </div>
+
+          <!-- DESKTOP VIEW (TABLE) -->
+          <div class="hidden sm:block overflow-x-auto border border-gray-100 rounded-xl max-h-60 overflow-y-auto">
+            <table class="w-full text-sm text-left">
+              <thead class="bg-gray-700 text-white sticky top-0">
+                <tr>
+                  <th class="px-3 py-2 font-medium">Nama Siswa</th>
+                  <th class="px-3 py-2 font-medium">Kelas</th>
+                  <th class="px-3 py-2 font-medium text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-rincian-siswa" class="divide-y divide-gray-100">
+                <tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <p id="info-offline" class="hidden text-xs text-amber-600 mb-5 text-center">Termasuk data yang belum sinkron ke server</p>
+
+        <div id="peringatan-offline" class="hidden mb-4 bg-red-50 text-red-600 text-sm px-4 py-2 rounded-lg border border-red-200 text-left">
+          📴 Export laporan butuh koneksi internet. Sambungkan kembali ke internet untuk mengunduh.
+        </div>
+
+        <button id="btn-export" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transisi disabled:bg-gray-300 disabled:cursor-not-allowed">
           ⬇️ Download Laporan Excel
         </button>
-        <p id="pesan-export" class="text-sm text-gray-400 mt-3 hidden"></p>
+        <p id="pesan-export" class="text-sm text-emerald-600 font-medium mt-3 hidden text-center"></p>
       </div>
     </main>
 
@@ -60,20 +167,263 @@
         window.addEventListener("online", perbaruiStatusExport);
         window.addEventListener("offline", perbaruiStatusExport);
 
-        const [absensi, siswa] = await Promise.all([dbSelect("tabel_absensi"), dbSelect("tabel_siswa")]);
-        const petaSiswa = {};
-        siswa.forEach((s) => (petaSiswa[s.id] = s));
+        const now = new Date();
+        const tahunIni = now.getFullYear();
+        const bulanIni = String(now.getMonth() + 1).padStart(2, '0');
+        const inputBulan = document.getElementById("filter-bulan");
+        inputBulan.value = `${tahunIni}-${bulanIni}`;
 
-        semuaData = absensi.map((a) => ({ ...a, tabel_siswa: petaSiswa[a.siswa_id] || null }));
+        inputBulan.addEventListener("change", () => {
+          hitungStatistikBulanIni(semuaData);
+        });
+
+        const [absensi, siswa] = await Promise.all([
+          typeof dbSelect === "function" ? dbSelect("tabel_absensi") : Promise.resolve([]),
+          typeof dbSelect === "function" ? dbSelect("tabel_siswa") : Promise.resolve([])
+        ]);
+
+        const petaSiswa = {};
+        if (Array.isArray(siswa)) {
+          siswa.forEach((s) => (petaSiswa[s.id] = s));
+        }
+
+        if (Array.isArray(absensi)) {
+          semuaData = absensi.map((a) => {
+            const dataSiswa = petaSiswa[a.siswa_id] || {};
+            return {
+              ...a,
+              nama_siswa: dataSiswa.nama_siswa || a.nama_siswa || a.nama || "Tanpa Nama",
+              kelas: dataSiswa.kelas || a.kelas || "-"
+            };
+          });
+        }
+
         document.getElementById("total-absensi").textContent = semuaData.length;
 
-        if (jumlahAntreanOffline() > 0) {
+        hitungRekapPeriodeKelasXdanXI(semuaData);
+        hitungStatistikBulanIni(semuaData);
+
+        if (typeof jumlahAntreanOffline === "function" && jumlahAntreanOffline() > 0) {
           document.getElementById("info-offline").classList.remove("hidden");
         }
       }
 
-      // Export hanya boleh dilakukan saat online, walau input & rekap absensi
-      // tetap bisa dipakai offline seperti biasa.
+      // 1. Rekap Kumulatif Seluruh Periode (Khusus Kelas X & XI)
+      function hitungRekapPeriodeKelasXdanXI(dataList) {
+        const rekapKumulatif = {};
+
+        dataList.forEach(item => {
+          const statusVal = item.status_kehadiran || item.status || "";
+          if (statusVal.toLowerCase() !== 'hadir') return;
+
+          const kelas = item.kelas || "";
+          const kelasUpper = kelas.toUpperCase();
+
+          const isKelasX = kelasUpper.startsWith("X ") || kelasUpper.startsWith("X-") || kelasUpper === "X";
+          const isKelasXI = kelasUpper.startsWith("XI") && !kelasUpper.startsWith("XII");
+
+          if (isKelasX || isKelasXI) {
+            const nama = item.nama_siswa;
+            const key = `${nama}_${kelas}`;
+
+            if (!rekapKumulatif[key]) {
+              rekapKumulatif[key] = { nama, kelas, total: 0 };
+            }
+            rekapKumulatif[key].total += 1;
+          }
+        });
+
+        const listPeriode = Object.values(rekapKumulatif).sort((a, b) => b.total - a.total);
+        
+        // Render Desktop
+        const tbodyPeriode = document.getElementById("tabel-rekap-periode");
+        // Render Mobile
+        const cardPeriode = document.getElementById("card-rekap-periode");
+
+        tbodyPeriode.innerHTML = "";
+        cardPeriode.innerHTML = "";
+
+        if (listPeriode.length === 0) {
+          tbodyPeriode.innerHTML = `<tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Belum ada data kehadiran untuk Kelas X & XI.</td></tr>`;
+          cardPeriode.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">Belum ada data kehadiran Kelas X & XI.</p>`;
+          return;
+        }
+
+        listPeriode.forEach(item => {
+          // Table Row (Desktop)
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-emerald-50/50";
+          tr.innerHTML = `
+            <td class="px-3 py-2 font-medium text-gray-800">${escapeHtml(item.nama)}</td>
+            <td class="px-3 py-2 text-gray-600">${escapeHtml(item.kelas)}</td>
+            <td class="px-3 py-2 text-center font-bold text-emerald-700">${item.total}x Hadir</td>
+          `;
+          tbodyPeriode.appendChild(tr);
+
+          // Card Element (Mobile)
+          const card = document.createElement("div");
+          card.className = "bg-emerald-50/40 border border-emerald-100 p-2.5 rounded-lg flex justify-between items-center";
+          card.innerHTML = `
+            <div>
+              <p class="text-xs font-bold text-gray-800">${escapeHtml(item.nama)}</p>
+              <p class="text-[11px] text-gray-500">Kelas: ${escapeHtml(item.kelas)}</p>
+            </div>
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-100/70 px-2 py-1 rounded-md">${item.total}x Hadir</span>
+          `;
+          cardPeriode.appendChild(card);
+        });
+      }
+
+      // 2. Rekap Bulanan & Kartu Terajin
+      function hitungStatistikBulanIni(dataList) {
+        const nilaiInput = document.getElementById("filter-bulan").value;
+        if (!nilaiInput) return;
+
+        const [targetTahun, targetBulan] = nilaiInput.split("-");
+        const namaBulanList = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const namaBulanStr = namaBulanList[parseInt(targetBulan, 10) - 1];
+
+        document.getElementById("label-bulan").textContent = `Hadir (${namaBulanStr} ${targetTahun})`;
+        document.getElementById("judul-rekap-bulanan").textContent = `📅 Rekap Bulanan Kehadiran (${namaBulanStr} ${targetTahun} - Kelas X & XI)`;
+
+        const dataBulanIni = dataList.filter(item => {
+          const tglStr = item.tanggal_kegiatan || item.tanggal || item.created_at || "";
+          if (!tglStr) return false;
+
+          const cocokFormatAngka = tglStr.includes(`${targetTahun}-${targetBulan}`);
+          const cocokNamaBulan = tglStr.toLowerCase().includes(namaBulanStr.toLowerCase()) && tglStr.includes(targetTahun);
+
+          const statusVal = item.status_kehadiran || item.status || "";
+          const isHadir = statusVal.toLowerCase() === 'hadir';
+          
+          return (cocokFormatAngka || cocokNamaBulan) && isHadir;
+        });
+
+        document.getElementById("total-bulan-ini").textContent = dataBulanIni.length;
+
+        const rekapSiswa = {};
+        const rekapBulananX_XI = {};
+        const rekapKelasX = {};
+        const rekapKelasXI = {};
+
+        dataBulanIni.forEach(item => {
+          const nama = item.nama_siswa;
+          const kelas = item.kelas;
+          const key = `${nama}_${kelas}`;
+
+          if (!rekapSiswa[key]) {
+            rekapSiswa[key] = { nama, kelas, totalHadir: 0, status: item.status_kehadiran || item.status || "Hadir" };
+          }
+          rekapSiswa[key].totalHadir += 1;
+
+          const kelasUpper = kelas.toUpperCase();
+          const isKelasX = kelasUpper.startsWith("X ") || kelasUpper.startsWith("X-") || kelasUpper === "X";
+          const isKelasXI = kelasUpper.startsWith("XI") && !kelasUpper.startsWith("XII");
+
+          if (isKelasX || isKelasXI) {
+            if (!rekapBulananX_XI[key]) {
+              rekapBulananX_XI[key] = { nama, kelas, totalHadir: 0 };
+            }
+            rekapBulananX_XI[key].totalHadir += 1;
+          }
+
+          if (isKelasX) {
+            if (!rekapKelasX[key]) rekapKelasX[key] = { nama, kelas, totalHadir: 0 };
+            rekapKelasX[key].totalHadir += 1;
+          } else if (isKelasXI) {
+            if (!rekapKelasXI[key]) rekapKelasXI[key] = { nama, kelas, totalHadir: 0 };
+            rekapKelasXI[key].totalHadir += 1;
+          }
+        });
+
+        // Set Terajin Kelas X & XI Bulanan
+        const listX = Object.values(rekapKelasX).sort((a, b) => b.totalHadir - a.totalHadir);
+        document.getElementById("top-siswa-x").textContent = listX.length > 0 ? `${listX[0].nama} (${listX[0].kelas}) - ${listX[0].totalHadir}x Hadir` : "Belum ada data Kelas X";
+
+        const listXI = Object.values(rekapKelasXI).sort((a, b) => b.totalHadir - a.totalHadir);
+        document.getElementById("top-siswa-xi").textContent = listXI.length > 0 ? `${listXI[0].nama} (${listXI[0].kelas}) - ${listXI[0].totalHadir}x Hadir` : "Belum ada data Kelas XI";
+
+        // Render Rekap Bulanan (X & XI)
+        const listBulanan = Object.values(rekapBulananX_XI).sort((a, b) => b.totalHadir - a.totalHadir);
+        const tbodyBulanan = document.getElementById("tabel-rekap-bulanan");
+        const cardBulanan = document.getElementById("card-rekap-bulanan");
+        
+        tbodyBulanan.innerHTML = "";
+        cardBulanan.innerHTML = "";
+
+        if (listBulanan.length === 0) {
+          tbodyBulanan.innerHTML = `<tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Tidak ada data kehadiran Kelas X & XI di bulan ini.</td></tr>`;
+          cardBulanan.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">Tidak ada data kehadiran Kelas X & XI di bulan ini.</p>`;
+        } else {
+          listBulanan.forEach(item => {
+            // Desktop
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-emerald-50/50";
+            tr.innerHTML = `
+              <td class="px-3 py-2 font-medium text-gray-800">${escapeHtml(item.nama)}</td>
+              <td class="px-3 py-2 text-gray-600">${escapeHtml(item.kelas)}</td>
+              <td class="px-3 py-2 text-center font-bold text-emerald-700">${item.totalHadir}x Hadir</td>
+            `;
+            tbodyBulanan.appendChild(tr);
+
+            // Mobile
+            const card = document.createElement("div");
+            card.className = "bg-emerald-50/40 border border-emerald-100 p-2.5 rounded-lg flex justify-between items-center";
+            card.innerHTML = `
+              <div>
+                <p class="text-xs font-bold text-gray-800">${escapeHtml(item.nama)}</p>
+                <p class="text-[11px] text-gray-500">Kelas: ${escapeHtml(item.kelas)}</p>
+              </div>
+              <span class="text-xs font-bold text-emerald-700 bg-emerald-100/70 px-2 py-1 rounded-md">${item.totalHadir}x Hadir</span>
+            `;
+            cardBulanan.appendChild(card);
+          });
+        }
+
+        // Render Rincian Umum
+        const listRekap = Object.values(rekapSiswa).sort((a, b) => b.totalHadir - a.totalHadir);
+        const tbody = document.getElementById("tabel-rincian-siswa");
+        const cardRincian = document.getElementById("card-rincian-siswa");
+
+        tbody.innerHTML = "";
+        cardRincian.innerHTML = "";
+
+        if (listRekap.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Tidak ada data di periode ini.</td></tr>`;
+          cardRincian.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">Tidak ada data di periode ini.</p>`;
+          return;
+        }
+
+        listRekap.forEach(item => {
+          // Desktop
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-gray-50";
+          tr.innerHTML = `
+            <td class="px-3 py-2 font-medium text-gray-800">${escapeHtml(item.nama)}</td>
+            <td class="px-3 py-2 text-gray-600">${escapeHtml(item.kelas)}</td>
+            <td class="px-3 py-2 text-center font-semibold text-gray-700">Hadir (${item.totalHadir}x)</td>
+          `;
+          tbody.appendChild(tr);
+
+          // Mobile
+          const card = document.createElement("div");
+          card.className = "bg-gray-50 border border-gray-200 p-2.5 rounded-lg flex justify-between items-center";
+          card.innerHTML = `
+            <div>
+              <p class="text-xs font-bold text-gray-800">${escapeHtml(item.nama)}</p>
+              <p class="text-[11px] text-gray-500">Kelas: ${escapeHtml(item.kelas)}</p>
+            </div>
+            <span class="text-xs font-semibold text-gray-700 bg-gray-200/60 px-2 py-1 rounded-md">Hadir (${item.totalHadir}x)</span>
+          `;
+          cardRincian.appendChild(card);
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '-';
+        return String(str).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      }
+
       function perbaruiStatusExport() {
         const btn = document.getElementById("btn-export");
         const peringatan = document.getElementById("peringatan-offline");
@@ -100,10 +450,22 @@
         const tanggalSekarang = new Date().toISOString().slice(0, 10);
         const namaFile = `laporan_absensi_irma_${tanggalSekarang}.xlsx`;
 
-        unduhExcel(namaFile, semuaData);
+        if (typeof unduhExcel === "function") {
+          unduhExcel(namaFile, semuaData);
+        } else {
+          const ws = XLSX.utils.json_to_sheet(semuaData.map(item => ({
+            "Tanggal": item.tanggal_kegiatan || item.tanggal || "-",
+            "Nama Siswa": item.nama_siswa,
+            "Kelas": item.kelas,
+            "Status Kehadiran": item.status_kehadiran || item.status || "-"
+          })));
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, "Laporan Absensi");
+          XLSX.writeFile(wb, namaFile);
+        }
 
         const pesan = document.getElementById("pesan-export");
-        pesan.textContent = `File "${namaFile}" berhasil diunduh.`;
+        pesan.textContent = `✅ File "${namaFile}" berhasil diunduh.`;
         pesan.classList.remove("hidden");
       });
 
