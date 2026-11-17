@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kegiatan Kumpulan - Absensi IRMA</title>
+
+    <!-- Font OpenSans sesuai aturan gaya project -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- CSS ditulis sendiri, tanpa UI library -->
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+    <!-- Pustaka Supabase dan lapisan data offline -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+  </head>
+  <body class="halaman-kegiatan">
+    <header class="kegiatan-header">
+      <div class="kegiatan-header-inner">
+        <div class="kegiatan-brand">Absensi IRMA</div>
+        <nav class="kegiatan-nav" aria-label="Navigasi utama">
+          <a href="/users" class="kegiatan-nav-link">Akun</a>
+          <a href="/siswa" class="kegiatan-nav-link">Siswa</a>
+          <a href="/tambah" class="kegiatan-nav-link">Input Absensi</a>
+          <a href="/rekap" class="kegiatan-nav-link">Rekap</a>
+          <a href="/kegiatan" class="kegiatan-nav-link aktif">Kegiatan</a>
+          <a href="/export" class="kegiatan-nav-link">Export</a>
+          <button type="button" onclick="logout()" class="kegiatan-nav-link kegiatan-logout">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="kegiatan-main">
+      <div class="kegiatan-judul-halaman">
+        <div>
+          <h1>Kegiatan Kumpulan IRMA</h1>
+          <p class="kegiatan-subjudul">Catat judul, tanggal, dan isi kegiatan kumpulan.</p>
+        </div>
+        <span id="status-jaringan" class="kegiatan-status">Online</span>
+      </div>
+
+      <div id="notifikasi-kegiatan" class="kegiatan-notifikasi" hidden></div>
+      <div id="info-antrean" class="kegiatan-notifikasi info" hidden></div>
+
+      <!-- FORM INPUT KEGIATAN -->
+      <section class="kegiatan-kartu">
+        <h2 class="kegiatan-kartu-judul">Input Kegiatan Baru</h2>
+        <form id="form-kegiatan" class="kegiatan-form">
+          <div class="kegiatan-field">
+            <label class="kegiatan-label" for="judul_kumpulan">Judul Kumpulan</label>
+            <input
+              type="text"
+              id="judul_kumpulan"
+              class="kegiatan-input"
+              maxlength="150"
+              required
+              placeholder="Contoh: Kumpulan Rutin Bulan November"
+            />
+          </div>
+
+          <div class="kegiatan-field">
+            <label class="kegiatan-label" for="tanggal_kegiatan">Tanggal Kegiatan</label>
+            <input type="date" id="tanggal_kegiatan" class="kegiatan-input" required />
+          </div>
+
+          <div class="kegiatan-field">
+            <label class="kegiatan-label" for="isi_kegiatan">Isi Kegiatan</label>
+            <textarea
+              id="isi_kegiatan"
+              class="kegiatan-textarea"
+              rows="5"
+              maxlength="5000"
+              required
+              placeholder="Tulis rangkaian acara, peserta, dan hasil kegiatan..."
+            ></textarea>
+          </div>
+
+          <button type="submit" id="tombol-kirim" class="kegiatan-tombol-kirim">Kirim Kegiatan</button>
+        </form>
+      </section>
+
+      <!-- TABEL REKAP KEGIATAN (LAYAR LAPTOP) -->
+      <section class="kegiatan-kartu">
+        <div class="kegiatan-tabel-header">
+          <h2 class="kegiatan-kartu-judul">Data Kegiatan Tersimpan</h2>
+          <span class="kegiatan-jumlah">Total: <strong id="jumlah-kegiatan">0</strong></span>
+        </div>
+
+        <div class="kegiatan-tabel-wrap">
+          <table class="kegiatan-tabel">
+            <thead>
+              <tr>
+                <th>Judul Kumpulan</th>
+                <th>Tanggal</th>
+                <th>Isi Kegiatan</th>
+                <th class="kegiatan-sel-aksi">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tabel-kegiatan-body">
+              <tr><td colspan="4" class="kegiatan-kosong">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- KARTU REKAP KEGIATAN (LAYAR HP) -->
+        <div id="kartu-kegiatan" class="kegiatan-kartu-list">
+          <p class="kegiatan-kosong">Memuat data...</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/offline-store.js"></script>
+    <script src="assets/js/kegiatan-logic.js"></script>
+    <script src="assets/js/kegiatan-page.js"></script>
+  </body>
+</html>

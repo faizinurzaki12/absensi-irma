@@ -21,3 +21,410 @@ body {
 .transisi {
   transition: all 0.15s ease-in-out;
 }
+
+/* =========================================================
+   HALAMAN KEGIATAN KUMPULAN IRMA
+   Gaya khusus fitur kegiatan. Semua class diawali "kegiatan-"
+   supaya tidak bentrok dengan class halaman lain.
+   ========================================================= */
+
+/* Warna tema dan variabel yang dipakai berulang */
+:root {
+  --hijau-utama: #059669;
+  --hijau-gelap: #047857;
+  --hijau-muda: #ecfdf5;
+  --hijau-garis: #d1fae5;
+  --warna-teks: #1f2937;
+  --warna-abu: #6b7280;
+  --warna-garis: #e5e7eb;
+}
+
+/* Atribut hidden harus selalu menang atas class tampilan apa pun */
+[hidden] {
+  display: none !important;
+}
+
+/* Kerangka dasar halaman: latar putih, font OpenSans */
+.halaman-kegiatan {
+  min-height: 100vh;
+  margin: 0;
+  background: #ffffff;
+  color: var(--warna-teks);
+  font-family: 'Open Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- HEADER DAN NAVIGASI ---------- */
+.kegiatan-header {
+  background: var(--hijau-utama);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
+}
+
+.kegiatan-header-inner {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.kegiatan-brand {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.kegiatan-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Tautan dan tombol logout sengaja memakai gaya yang sama */
+.kegiatan-nav-link {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.kegiatan-nav-link:hover {
+  background: var(--hijau-gelap);
+}
+
+.kegiatan-nav-link.aktif {
+  background: var(--hijau-gelap);
+}
+
+.kegiatan-logout {
+  background: #dc2626;
+}
+
+.kegiatan-logout:hover {
+  background: #b91c1c;
+}
+
+/* ---------- KONTEN UTAMA ---------- */
+.kegiatan-main {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 28px 16px 48px;
+}
+
+.kegiatan-judul-halaman {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.kegiatan-judul-halaman h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.kegiatan-subjudul {
+  margin: 4px 0 0;
+  color: var(--warna-abu);
+  font-size: 13px;
+}
+
+.kegiatan-status {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--hijau-muda);
+  color: var(--hijau-gelap);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.kegiatan-status.offline {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* ---------- NOTIFIKASI ---------- */
+.kegiatan-notifikasi {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.kegiatan-notifikasi.berhasil {
+  background: var(--hijau-muda);
+  color: var(--hijau-gelap);
+}
+
+.kegiatan-notifikasi.gagal {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.kegiatan-notifikasi.info {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+/* ---------- KARTU FORM DAN TABEL ---------- */
+.kegiatan-kartu {
+  background: #ffffff;
+  border: 1px solid var(--warna-garis);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.kegiatan-kartu-judul {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.kegiatan-tabel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.kegiatan-tabel-header .kegiatan-kartu-judul {
+  margin-bottom: 16px;
+}
+
+.kegiatan-jumlah {
+  color: var(--warna-abu);
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+/* ---------- FORM ---------- */
+.kegiatan-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kegiatan-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kegiatan-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.kegiatan-input,
+.kegiatan-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--warna-teks);
+  background: #ffffff;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.kegiatan-textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Fokus input memakai warna hijau sesuai tema */
+.kegiatan-input:focus,
+.kegiatan-textarea:focus {
+  outline: none;
+  border-color: var(--hijau-utama);
+  box-shadow: 0 0 0 3px var(--hijau-garis);
+}
+
+.kegiatan-tombol-kirim {
+  align-self: flex-start;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--hijau-utama);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.kegiatan-tombol-kirim:hover {
+  background: var(--hijau-gelap);
+}
+
+/* ---------- TABEL (LAYAR LAPTOP) ---------- */
+.kegiatan-tabel-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.kegiatan-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.kegiatan-tabel th {
+  background: var(--hijau-utama);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+.kegiatan-tabel td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--warna-garis);
+  vertical-align: top;
+}
+
+.kegiatan-tabel tbody tr:hover {
+  background: var(--hijau-muda);
+}
+
+.kegiatan-sel-utama {
+  font-weight: 600;
+}
+
+.kegiatan-sel-aksi {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---------- KARTU DATA (LAYAR HP) ---------- */
+.kegiatan-kartu-list {
+  display: none;
+}
+
+.kegiatan-item {
+  border: 1px solid var(--hijau-garis);
+  border-radius: 10px;
+  background: var(--hijau-muda);
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.kegiatan-item-atas {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.kegiatan-item-judul {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.kegiatan-item-tanggal,
+.kegiatan-item-isi {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--warna-abu);
+  line-height: 1.5;
+}
+
+.kegiatan-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Tombol hapus dipakai bersama oleh tabel dan kartu */
+.kegiatan-tombol-hapus {
+  border: 0;
+  background: transparent;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.kegiatan-tombol-hapus:hover {
+  text-decoration: underline;
+}
+
+.kegiatan-kosong {
+  padding: 18px 0;
+  text-align: center;
+  color: var(--warna-abu);
+  font-size: 13px;
+}
+
+/* ---------- PENYESUAIAN LAYAR HP ---------- */
+@media (max-width: 640px) {
+  .kegiatan-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .kegiatan-nav {
+    gap: 2px;
+  }
+
+  .kegiatan-nav-link {
+    font-size: 12px;
+    padding: 5px 9px;
+  }
+
+  .kegiatan-main {
+    padding: 20px 12px 40px;
+  }
+
+  .kegiatan-judul-halaman h1 {
+    font-size: 20px;
+  }
+
+  .kegiatan-kartu {
+    padding: 16px;
+  }
+
+  /* Di HP, tabel disembunyikan dan diganti kartu */
+  .kegiatan-tabel-wrap {
+    display: none;
+  }
+
+  .kegiatan-kartu-list {
+    display: block;
+  }
+
+  .kegiatan-tombol-kirim {
+    width: 100%;
+  }
+}
