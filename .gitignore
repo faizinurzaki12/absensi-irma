@@ -1,0 +1,5 @@
+# File dan folder yang dilarang dikirim ke repository
+Agent.md
+TASKS.md
+sql/
+doks/

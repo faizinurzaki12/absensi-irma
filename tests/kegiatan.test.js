@@ -176,10 +176,3 @@ test("file baru tidak memakai emoji atau ikon", () => {
   });
 });
 
-test("migrasi SQL untuk tabel kegiatan tersedia", () => {
-  const sql = bacaFile("sql/tabel_kegiatan.sql").toLowerCase();
-  assert.equal(sql.includes("create table if not exists public.tabel_kegiatan"), true);
-  assert.equal(sql.includes("judul_kumpulan"), true);
-  assert.equal(sql.includes("isi_kegiatan"), true);
-  assert.equal(sql.includes("enable row level security"), true);
-});

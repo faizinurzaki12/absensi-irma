@@ -430,19 +430,49 @@ body {
     align-items: flex-start;
   }
 
+  /* Ruang untuk tab bar bawah agar konten tidak tertutup */
+  .halaman-kegiatan {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+
+  /* Navbar dipindah ke bawah menyerupai tab bar */
   .kegiatan-nav {
-    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    width: auto;
     gap: 2px;
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 4px;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    background: #ffffff;
+    border-top: 1px solid var(--warna-garis);
+    box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.08);
     -webkit-overflow-scrolling: touch;
   }
 
   .kegiatan-nav-link {
-    font-size: 12px;
-    padding: 5px 9px;
+    flex: 0 0 auto;
+    min-width: 62px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--warna-abu);
+    font-size: 10px;
+    text-align: center;
     white-space: nowrap;
+  }
+
+  .kegiatan-nav-link.aktif {
+    background: var(--hijau-muda);
+    color: var(--hijau-gelap);
+  }
+
+  .kegiatan-nav .kegiatan-logout {
+    background: transparent;
+    color: #b91c1c;
   }
 
   .kegiatan-main {
@@ -809,5 +839,53 @@ body {
   .dashboard-cepat .kegiatan-tombol-export {
     width: 100%;
     text-align: center;
+  }
+}
+
+/* =========================================================
+   TAB BAR BAWAH UNTUK HALAMAN BERBASIS TAILWIND
+   Dipakai pada halaman siswa, tambah, rekap, users, dan export.
+   ========================================================= */
+@media (max-width: 640px) {
+  .halaman-tabbar {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+
+  nav.nav-scroll {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    justify-content: flex-start;
+    gap: 2px;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    background: #ffffff;
+    border-top: 1px solid var(--warna-garis);
+    box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.08);
+  }
+
+  nav.nav-scroll > a,
+  nav.nav-scroll > button {
+    min-width: 62px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--warna-abu);
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* Tandai halaman aktif dan tombol logout dengan warna tema */
+  nav.nav-scroll > a.bg-emerald-700 {
+    background: var(--hijau-muda);
+    color: var(--hijau-gelap);
+  }
+
+  nav.nav-scroll > button.bg-red-500 {
+    background: transparent;
+    color: #b91c1c;
   }
 }

@@ -259,6 +259,44 @@ test("teks rekap panjang tidak keluar dari kartu export", () => {
   assert.equal(html.includes('id="top-siswa-x-periode" class="text-xs text-gray-500 mt-1 break-words"'), true);
 });
 
+test("navbar HP memakai tab bar bawah di seluruh halaman", () => {
+  const css = bacaFile("assets/css/style.css");
+
+  assert.equal(css.includes(".kegiatan-nav {"), true);
+  assert.equal(css.includes("nav.nav-scroll {"), true);
+  assert.equal(css.includes(".halaman-tabbar {"), true);
+  assert.equal(css.includes("bottom: 0;"), true);
+  assert.equal(css.includes("env(safe-area-inset-bottom)"), true);
+
+  ["export.html", "siswa.html", "tambah.html", "rekap.html", "users.html"].forEach((nama) => {
+    assert.equal(bacaFile(nama).includes("halaman-tabbar"), true, nama + " belum memakai tab bar bawah");
+  });
+
+  ["kegiatan.html", "dashboard.html"].forEach((nama) => {
+    assert.equal(bacaFile(nama).includes('class="halaman-kegiatan"'), true, nama + " belum memakai gaya tab bar");
+  });
+});
+
+test("file dan folder terlarang diabaikan git", () => {
+  const ignore = bacaFile(".gitignore");
+  ["Agent.md", "TASKS.md", "sql/", "doks/"].forEach((nama) => {
+    assert.equal(ignore.includes(nama), true, nama + " belum ada di .gitignore");
+  });
+
+  const { execSync } = require("node:child_process");
+  const terlacak = execSync("git ls-files", { cwd: akarProject, encoding: "utf8" })
+    .split("\n")
+    .filter(Boolean);
+
+  ["Agent.md", "TASKS.md", "sql/", "doks/"].forEach((nama) => {
+    assert.equal(
+      terlacak.some((item) => item === nama || item.startsWith(nama)),
+      false,
+      nama + " masih terlacak di git"
+    );
+  });
+});
+
 test("file baru tidak memakai emoji atau ikon", () => {
   const daftar = [
     "dashboard.html",

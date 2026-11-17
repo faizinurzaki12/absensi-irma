@@ -34,3 +34,10 @@
 - Perbaikan: teks nama siswa pada kartu export tidak keluar dari kartu saat namanya panjang.
 - Perbaikan: tidak memasukkan Agent.md, TASKS.md, folder doks, dan folder sql ke dalam commit fitur ini.
 - Perbaikan: menambahkan 3 pengujian otomatis sehingga total menjadi 32 pengujian.
+
+## Versi 1.3.0 - 18 November 2026
+- Perbaikan: navbar di layar handphone kini tampil sebagai tab bar tetap di bagian bawah halaman.
+- Perbaikan: menambahkan berkas .gitignore untuk mengabaikan Agent.md, TASKS.md, folder sql, dan folder doks.
+- Perbaikan: menghapus pengujian migrasi SQL lama karena folder sql tidak lagi disertakan dalam repository.
+- Perbaikan: memastikan Agent.md dan TASKS.md tidak terlacak serta tidak ikut dikirim.
+- Perbaikan: menyesuaikan jumlah pengujian otomatis menjadi 33 pengujian.
