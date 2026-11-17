@@ -344,6 +344,20 @@ test("semua elemen dibuat responsif untuk tampilan HP", () => {
   assert.match(css, /input,\s*textarea,\s*select\s*\{[^}]*max-width:\s*100%/);
 });
 
+test("README menjelaskan proyek beserta bagian yang diminta", () => {
+  const readme = bacaFile("README.md");
+
+  assert.equal(readme.startsWith("# Absensi IRMA"), true);
+
+  ["## Deskripsi", "## Tujuan", "## Fitur", "## Teknologi yang dipakai", "## Struktur proyek", "## Pengujian"].forEach((bagian) => {
+    assert.equal(readme.includes(bagian), true, "README tidak punya bagian " + bagian);
+  });
+
+  ["tabel_siswa", "tabel_absensi", "tabel_kegiatan", "tabel_users", "Tab bar", "Google Dokumen", "Excel"].forEach((kata) => {
+    assert.equal(readme.includes(kata), true, "README tidak menyebut " + kata);
+  });
+});
+
 test("file baru tidak memakai emoji atau ikon", () => {
   const daftar = [
     "dashboard.html",

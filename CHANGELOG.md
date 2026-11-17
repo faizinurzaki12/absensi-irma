@@ -51,3 +51,8 @@
 - Perbaikan: menambahkan modul bersama assets/js/navbar.js agar susunan tab bar tidak duplikat di tujuh halaman.
 - Perbaikan: seluruh elemen dibuat lebih responsif di handphone dengan membatasi lebar maksimal dan mencegah teks keluar layar.
 - Perbaikan: menambahkan 3 pengujian otomatis sehingga total menjadi 36 pengujian.
+
+## Versi 1.5.0 - 18 November 2026
+- Dokumentasi: menambahkan README proyek yang berisi judul, deskripsi, tujuan, fitur, teknologi yang dipakai, struktur proyek, daftar halaman, pengujian, dan catatan penting.
+- Dokumentasi: README menjelaskan alur kerja offline, fitur kegiatan, ekspor dokumen Proker, dan tab bar responsif sesuai kondisi aplikasi saat ini.
+- Perbaikan: menambahkan 1 pengujian otomatis sehingga total menjadi 37 pengujian.
