@@ -1,6 +1,7 @@
 // ==========================================================
 // tests/dokumen.test.js
-// Pengujian untuk fitur dokumen, dashboard, dan export Excel.
+// Pengujian untuk fitur dokumen, dashboard, export Excel,
+// dan perbaikan kelas XI, aktivitas, loading, serta redirect.
 // Dijalankan dengan: node --test tests/dokumen.test.js
 // ==========================================================
 
@@ -31,6 +32,9 @@ const absensiContoh = [
   { id: 5, siswa_id: 2, tanggal_kegiatan: "2026-11-06", status_kehadiran: "Hadir" },
   { id: 6, siswa_id: 3, tanggal_kegiatan: "2026-11-05", status_kehadiran: "Hadir" },
   { id: 7, siswa_id: 1, tanggal_kegiatan: "2026-11-07", status_kehadiran: "Alfa" },
+  { id: 8, siswa_id: 3, tanggal_kegiatan: "2026-10-05", status_kehadiran: "Hadir" },
+  { id: 9, siswa_id: 3, tanggal_kegiatan: "2026-11-08", status_kehadiran: "Hadir" },
+  { id: 10, siswa_id: 3, tanggal_kegiatan: "2026-11-09", status_kehadiran: "Alfa" },
 ];
 
 // ---------- KLASIFIKASI KELAS ----------
@@ -42,28 +46,30 @@ test("kelasTermasuk membedakan X, XI, dan XII dengan benar", () => {
   assert.equal(Laporan.kelasTermasuk("XI TJKT 1", "XI"), true);
   assert.equal(Laporan.kelasTermasuk("XII RPL 2", "XI"), false);
   assert.equal(Laporan.kelasTermasuk("XII RPL 2", "XII"), true);
-  assert.equal(Laporan.kelasTermasuk("XII", "XII"), true);
+  assert.equal(Laporan.kelasTermasuk("XI", "XI"), true);
 });
 
 test("hitungTerajin hanya menghitung Hadir pada jenjang yang diminta", () => {
-  const xii = Laporan.hitungTerajin(absensiContoh, siswaContoh, "XII", "");
-  const x = Laporan.hitungTerajin(absensiContoh, siswaContoh, "X", "");
   const xi = Laporan.hitungTerajin(absensiContoh, siswaContoh, "XI", "");
+  const x = Laporan.hitungTerajin(absensiContoh, siswaContoh, "X", "");
+  const xii = Laporan.hitungTerajin(absensiContoh, siswaContoh, "XII", "");
 
-  assert.equal(xii.nama, "Budi");
-  assert.equal(xii.total, 2);
+  // Sesuai perbaikan: jenjang pertama yang dipakai dashboard/export adalah XI.
+  assert.equal(xi.nama, "Andi");
+  assert.equal(xi.total, 3);
   assert.equal(x.nama, "Siti");
   assert.equal(x.total, 3);
-  assert.equal(xi.nama, "Andi");
-  assert.equal(xi.total, 1);
+  // Pembantu kelas tetap mengenali XII, tetapi tidak dipakai pada antarmuka.
+  assert.equal(xii.nama, "Budi");
+  assert.equal(xii.total, 2);
 });
 
 test("hitungTerajin mengikuti filter bulan yang dipilih", () => {
-  const hasil = Laporan.hitungTerajin(absensiContoh, siswaContoh, "X", "2026-10");
-  assert.equal(hasil.nama, "Siti");
+  const hasil = Laporan.hitungTerajin(absensiContoh, siswaContoh, "XI", "2026-10");
+  assert.equal(hasil.nama, "Andi");
   assert.equal(hasil.total, 1);
 
-  const kosong = Laporan.hitungTerajin(absensiContoh, siswaContoh, "XII", "2026-12");
+  const kosong = Laporan.hitungTerajin(absensiContoh, siswaContoh, "XI", "2026-12");
   assert.equal(kosong, null);
 });
 
@@ -82,11 +88,15 @@ test("baris Excel memuat nama_siswa, kelas, dan kehadiran tiap bulan", () => {
   const siti = baris.find((item) => item.nama_siswa === "Siti");
   assert.equal(siti["kehadiran_2026-11"], 2);
   assert.equal(siti["kehadiran_2026-10"], 1);
+
+  const andi = baris.find((item) => item.nama_siswa === "Andi");
+  assert.equal(andi.kelas, "XI TJKT 1");
+  assert.equal(andi["kehadiran_2026-11"], 2);
 });
 
 test("baris Excel mengikuti filter bulan", () => {
   const baris = Laporan.bangunBarisExcelKehadiran(absensiContoh, siswaContoh, "2026-10");
-  assert.equal(baris.length, 2);
+  assert.equal(baris.length, 3);
   assert.equal("kehadiran_2026-10" in baris[0], true);
   assert.equal("kehadiran_2026-11" in baris[0], false);
 });
@@ -129,17 +139,31 @@ test("ringkasanSistem menghitung total dan aktivitas terbaru", () => {
   const hasil = Laporan.ringkasanSistem({
     siswa: siswaContoh,
     absensi: absensiContoh,
-    kegiatan: [{ id: 9, judul_kumpulan: "Raker", created_at: "2026-11-10T00:00:00Z" }],
+    kegiatan: [{ id: 11, judul_kumpulan: "Raker", created_at: "2026-11-10T00:00:00Z" }],
     users: [{ id: "u1" }],
   });
 
   assert.equal(hasil.totalSiswa, 3);
-  assert.equal(hasil.totalAbsensi, 7);
-  assert.equal(hasil.totalHadir, 6);
+  assert.equal(hasil.totalAbsensi, 10);
+  assert.equal(hasil.totalHadir, 8);
   assert.equal(hasil.totalKegiatan, 1);
   assert.equal(hasil.totalPetugas, 1);
   assert.ok(hasil.aktivitasTerbaru.length > 0);
   assert.equal(hasil.aktivitasTerbaru[0].label.includes("Raker"), true);
+});
+
+test("aktivitas absensi di dashboard hanya berisi nama dan kelas siswa", () => {
+  const hasil = Laporan.ringkasanSistem({
+    siswa: siswaContoh,
+    absensi: absensiContoh,
+  });
+  const label = hasil.aktivitasTerbaru.map((item) => item.label);
+
+  assert.equal(label.includes("Budi (XII RPL 2)"), true);
+  assert.equal(label.includes("Siti (X PPLG 1)"), true);
+  assert.equal(label.includes("Andi (XI TJKT 1)"), true);
+  assert.equal(label.some((item) => item.startsWith("Absensi ")), false);
+  assert.equal(label.some((item) => item.includes("pada 2026-")), false);
 });
 
 // ---------- STRUKTUR ANTARMUKA ----------
@@ -158,25 +182,51 @@ test("halaman kegiatan memiliki aksi lihat, edit, hapus, dan modal", () => {
   assert.equal(baris.includes("data-hapus-kegiatan"), true);
 });
 
-test("halaman export memakai dua kolom dan terajin XII serta X", () => {
+test("tombol kirim kegiatan menampilkan spinner dan teks tunggu saat mengirim", () => {
+  const html = bacaFile("kegiatan.html");
+  const js = bacaFile("assets/js/kegiatan-page.js");
+  const css = bacaFile("assets/css/style.css");
+
+  assert.equal(html.includes('id="tombol-kirim"'), true);
+  assert.equal(js.includes("aturTombolKirim(true)"), true);
+  assert.equal(js.includes("tombol.disabled = true"), true);
+  assert.equal(/Tunggu bentar\.\.\.\./i.test(js), true);
+  assert.equal(js.includes("kegiatan-spinner"), true);
+  assert.equal(js.includes("finally"), true);
+  assert.equal(css.includes(".kegiatan-spinner"), true);
+});
+
+test("halaman export memakai dua kolom dan terajin XI serta X", () => {
   const html = bacaFile("export.html");
   assert.equal(html.includes("lg:grid-cols-2"), true);
-  assert.equal(html.includes('id="top-siswa-xii"'), true);
+  assert.equal(html.includes('id="top-siswa-xi"'), true);
   assert.equal(html.includes('id="top-siswa-x"'), true);
-  assert.equal(html.includes('id="top-siswa-xi"'), false);
+  assert.equal(html.includes('id="top-siswa-xii"'), false);
+  assert.equal(html.includes("TERAJIN KELAS XI"), true);
   assert.equal(html.includes("bangunBarisExcelKehadiran"), true);
 });
 
 test("halaman dashboard tersedia dan tautannya ada di semua halaman", () => {
   const dashboard = bacaFile("dashboard.html");
   assert.equal(dashboard.includes('id="angka-siswa"'), true);
-  assert.equal(dashboard.includes('id="dashboard-top-xii"'), true);
+  assert.equal(dashboard.includes('id="dashboard-top-xi"'), true);
   assert.equal(dashboard.includes('id="dashboard-top-x"'), true);
+  assert.equal(dashboard.includes('id="dashboard-top-xii"'), false);
   assert.equal(dashboard.includes('id="dashboard-aktivitas"'), true);
 
   ["kegiatan.html", "export.html", "siswa.html", "tambah.html", "rekap.html", "users.html"].forEach((nama) => {
     assert.equal(bacaFile(nama).includes('href="/dashboard"'), true, nama + " belum punya menu Dashboard");
   });
+});
+
+test("setelah login pengguna diarahkan ke dashboard", () => {
+  const index = bacaFile("index.html");
+  const klien = bacaFile("assets/js/supabase-client.js");
+
+  assert.equal(index.includes('window.location.href = "/dashboard"'), true);
+  assert.equal(index.includes('window.location.href = "/siswa"'), false);
+  assert.equal(klien.includes('window.location.href = "/dashboard"'), true);
+  assert.equal(klien.includes('window.location.href = "/siswa"'), false);
 });
 
 test("file baru tidak memakai emoji atau ikon", () => {

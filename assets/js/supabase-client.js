@@ -57,7 +57,7 @@ async function redirectIfLoggedIn() {
       data: { session },
     } = await supabase.auth.getSession();
     if (session) {
-      window.location.href = "/siswa";
+      window.location.href = "/dashboard";
       return;
     }
   } catch (e) {
@@ -65,7 +65,7 @@ async function redirectIfLoggedIn() {
   }
 
   if (!navigator.onLine && _bacaSesiOfflineDariStorage()) {
-    window.location.href = "/siswa";
+    window.location.href = "/dashboard";
   }
 }
 

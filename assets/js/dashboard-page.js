@@ -1,7 +1,7 @@
 // ==========================================================
 // assets/js/dashboard-page.js
 // Menampilkan ringkasan keseluruhan sistem: jumlah data, siswa
-// paling rajin XII/X, dan aktivitas terbaru.
+// paling rajin XI/X, dan aktivitas terbaru.
 // ==========================================================
 
 (function () {
@@ -87,7 +87,7 @@
     elemen("angka-kegiatan").textContent = ringkas.totalKegiatan;
     elemen("angka-petugas").textContent = ringkas.totalPetugas;
 
-    tampilkanTerajin("dashboard-top-xii", Laporan.hitungTerajin(absensi, siswa, "XII", ""));
+    tampilkanTerajin("dashboard-top-xi", Laporan.hitungTerajin(absensi, siswa, "XI", ""));
     tampilkanTerajin("dashboard-top-x", Laporan.hitungTerajin(absensi, siswa, "X", ""));
     renderAktivitas(ringkas.aktivitasTerbaru);
   }

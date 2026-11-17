@@ -18,3 +18,10 @@
 - Feat: menambahkan halaman Dashboard Overview berisi ringkasan sistem, siswa paling rajin, dan aktivitas terbaru.
 - Feat: mengubah export Excel menjadi kolom nama_siswa, kelas, dan kehadiran tiap bulan sesuai filter yang dipilih.
 - Feat: menambahkan 12 pengujian otomatis untuk logika dokumen, Excel, dashboard, dan struktur halaman.
+
+## Versi 1.1.1 - 17 November 2026
+- Perbaikan: mengganti jenjang siswa paling rajin dari kelas XII menjadi kelas XI di halaman export dan dashboard.
+- Perbaikan: aktivitas terbaru pada dashboard kini menampilkan nama siswa dan kelasnya saja.
+- Perbaikan: tombol Kirim Kegiatan langsung dinonaktifkan dan menampilkan spinner serta teks "Tunggu bentar...." saat pengiriman.
+- Perbaikan: redirect setelah login diarahkan ke halaman dashboard.
+- Perbaikan: menambahkan 3 pengujian otomatis sehingga total menjadi 29 pengujian.

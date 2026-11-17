@@ -233,15 +233,18 @@
     var kegiatan = Array.isArray(sumber.kegiatan) ? sumber.kegiatan : [];
     var users = Array.isArray(sumber.users) ? sumber.users : [];
 
-    var totalHadir = absensi.filter(function (item) {
-      return teks(item.status_kehadiran).toLowerCase() === "hadir";
+    var absensiLengkap = gabungkanAbsensiSiswa(absensi, siswa);
+
+    var totalHadir = absensiLengkap.filter(function (item) {
+      return item.status_kehadiran.toLowerCase() === "hadir";
     }).length;
 
     var aktivitas = [];
-    absensi.forEach(function (item) {
+    absensiLengkap.forEach(function (item) {
+      // Sesuai permintaan: aktivitas absensi cukup menampilkan nama dan kelas.
       aktivitas.push({
         tanggal: teks(item.created_at || item.tanggal_kegiatan),
-        label: "Absensi " + teks(item.status_kehadiran) + " pada " + teks(item.tanggal_kegiatan),
+        label: item.nama_siswa + " (" + item.kelas + ")",
       });
     });
     kegiatan.forEach(function (item) {

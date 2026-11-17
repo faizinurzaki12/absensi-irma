@@ -185,6 +185,28 @@
     tampilkanPesan("Dokumen Proker IRMA berhasil diunduh.");
   }
 
+  /**
+   * Ubah tampilan tombol kirim saat data sedang dikirim.
+   * Tombol langsung dinonaktifkan agar tidak bisa diklik dua kali,
+   * lalu menampilkan spinner dan teks "Tunggu bentar....".
+   */
+  function aturTombolKirim(memuat) {
+    var tombol = elemen("tombol-kirim");
+    if (!tombol) return;
+
+    if (memuat) {
+      tombol.disabled = true;
+      tombol.setAttribute("aria-busy", "true");
+      tombol.innerHTML =
+        '<span class="kegiatan-spinner" aria-hidden="true"></span> Tunggu bentar....';
+      return;
+    }
+
+    tombol.disabled = false;
+    tombol.removeAttribute("aria-busy");
+    tombol.textContent = "Kirim Kegiatan";
+  }
+
   /** Pasang semua event handler setelah pengguna terautentikasi. */
   function pasangHandler(session) {
     var form = elemen("form-kegiatan");
@@ -192,35 +214,44 @@
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
 
-      var hasil = Logic.validasiKegiatan({
-        judul_kumpulan: elemen("judul_kumpulan").value,
-        tanggal_kegiatan: elemen("tanggal_kegiatan").value,
-        isi_kegiatan: elemen("isi_kegiatan").value,
-      });
+      // Langsung beri umpan balik visual agar pengguna tidak mengirim dua kali.
+      aturTombolKirim(true);
 
-      if (!hasil.valid) {
-        tampilkanPesan(Logic.pesanPertama(hasil.errors), "gagal");
-        return;
+      try {
+        var hasil = Logic.validasiKegiatan({
+          judul_kumpulan: elemen("judul_kumpulan").value,
+          tanggal_kegiatan: elemen("tanggal_kegiatan").value,
+          isi_kegiatan: elemen("isi_kegiatan").value,
+        });
+
+        if (!hasil.valid) {
+          tampilkanPesan(Logic.pesanPertama(hasil.errors), "gagal");
+          return;
+        }
+
+        var payload = {
+          judul_kumpulan: hasil.data.judul_kumpulan,
+          tanggal_kegiatan: hasil.data.tanggal_kegiatan,
+          isi_kegiatan: hasil.data.isi_kegiatan,
+          user_id: session.user.id,
+        };
+
+        // Simpan lewat lapisan offline-store agar tetap bisa dipakai tanpa sinyal.
+        await dbInsert("tabel_kegiatan", payload);
+
+        form.reset();
+        tampilkanPesan(
+          navigator.onLine
+            ? "Kegiatan berhasil disimpan."
+            : "Kegiatan disimpan di perangkat dan akan dikirim saat online."
+        );
+        perbaruiInfoAntrean();
+        await muatDaftarKegiatan();
+      } catch (error) {
+        tampilkanPesan("Gagal menyimpan kegiatan. Silakan coba lagi.", "gagal");
+      } finally {
+        aturTombolKirim(false);
       }
-
-      var payload = {
-        judul_kumpulan: hasil.data.judul_kumpulan,
-        tanggal_kegiatan: hasil.data.tanggal_kegiatan,
-        isi_kegiatan: hasil.data.isi_kegiatan,
-        user_id: session.user.id,
-      };
-
-      // Simpan lewat lapisan offline-store agar tetap bisa dipakai tanpa sinyal.
-      await dbInsert("tabel_kegiatan", payload);
-
-      form.reset();
-      tampilkanPesan(
-        navigator.onLine
-          ? "Kegiatan berhasil disimpan."
-          : "Kegiatan disimpan di perangkat dan akan dikirim saat online."
-      );
-      perbaruiInfoAntrean();
-      await muatDaftarKegiatan();
     });
 
     // Satu handler untuk seluruh tombol aksi di tabel, kartu, dan modal.
