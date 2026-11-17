@@ -34,6 +34,19 @@ body {
   flex: 0 0 auto;
 }
 
+/* Dropdown menu "Lainnya". Di desktop tampil sejajar seperti menu biasa,
+   di handphone diubah menjadi panel yang muncul ke atas tab bar. */
+.tabbar-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Tombol hamburger hanya dipakai di layar handphone */
+.tabbar-menu {
+  display: none;
+}
+
 /* =========================================================
    HALAMAN KEGIATAN KUMPULAN IRMA
    Gaya khusus fitur kegiatan. Semua class diawali "kegiatan-"
@@ -432,10 +445,10 @@ body {
 
   /* Ruang untuk tab bar bawah agar konten tidak tertutup */
   .halaman-kegiatan {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
   }
 
-  /* Navbar dipindah ke bawah menyerupai tab bar */
+  /* Navbar fixed di bawah, tanpa scroll kiri-kanan */
   .kegiatan-nav {
     position: fixed;
     bottom: 0;
@@ -443,24 +456,25 @@ body {
     right: 0;
     z-index: 40;
     width: auto;
+    min-height: 72px;
     gap: 2px;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    overflow: visible;
+    justify-content: space-around;
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
     background: #ffffff;
     border-top: 1px solid var(--warna-garis);
     box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.08);
-    -webkit-overflow-scrolling: touch;
   }
 
   .kegiatan-nav-link {
     flex: 0 0 auto;
-    min-width: 62px;
-    padding: 6px 8px;
+    min-width: 60px;
+    padding: 8px 6px;
     border-radius: 8px;
     background: transparent;
     color: var(--warna-abu);
-    font-size: 10px;
+    font-size: 11px;
     text-align: center;
     white-space: nowrap;
   }
@@ -470,7 +484,8 @@ body {
     color: var(--hijau-gelap);
   }
 
-  .kegiatan-nav .kegiatan-logout {
+  .kegiatan-nav .kegiatan-logout,
+  .tabbar-dropdown .kegiatan-logout {
     background: transparent;
     color: #b91c1c;
   }
@@ -848,44 +863,130 @@ body {
    ========================================================= */
 @media (max-width: 640px) {
   .halaman-tabbar {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
   }
 
+  /* Navbar fixed di bawah tanpa scroll kiri-kanan */
   nav.nav-scroll {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 40;
-    justify-content: flex-start;
+    min-height: 72px;
+    justify-content: space-around;
     gap: 2px;
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    overflow: visible;
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
     background: #ffffff;
     border-top: 1px solid var(--warna-garis);
     box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.08);
   }
 
-  nav.nav-scroll > a,
-  nav.nav-scroll > button {
-    min-width: 62px;
-    padding: 6px 8px;
+  nav.nav-scroll > a {
+    min-width: 60px;
+    padding: 8px 6px;
     border-radius: 8px;
     background: transparent;
     color: var(--warna-abu);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     text-align: center;
     white-space: nowrap;
   }
 
-  /* Tandai halaman aktif dan tombol logout dengan warna tema */
+  /* Tombol hamburger "Lainnya" */
+  .tabbar-menu {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 60px;
+    padding: 8px 6px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--warna-abu);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .tabbar-menu-ikon {
+    position: relative;
+    width: 16px;
+    height: 12px;
+    border-top: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+  }
+
+  .tabbar-menu-ikon::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 0;
+    right: 0;
+    border-top: 2px solid currentColor;
+  }
+
+  /* Panel dropdown muncul ke atas dari tab bar */
+  .tabbar-dropdown {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    background: #ffffff;
+    border: 1px solid var(--warna-garis);
+    border-radius: 14px;
+    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.14);
+    z-index: 39;
+  }
+
+  .tabbar-dropdown.buka {
+    display: flex;
+  }
+
+  .tabbar-dropdown > a,
+  .tabbar-dropdown > button {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--hijau-muda);
+    color: var(--hijau-gelap);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+  }
+
   nav.nav-scroll > a.bg-emerald-700 {
     background: var(--hijau-muda);
     color: var(--hijau-gelap);
   }
 
-  nav.nav-scroll > button.bg-red-500 {
-    background: transparent;
-    color: #b91c1c;
+  /* Responsif umum agar tidak ada elemen yang keluar layar */
+  body {
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+  }
+
+  main {
+    max-width: 100%;
+  }
+
+  input,
+  textarea,
+  select {
+    max-width: 100%;
   }
 }

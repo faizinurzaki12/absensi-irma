@@ -229,16 +229,17 @@ test("setelah login pengguna diarahkan ke dashboard", () => {
   assert.equal(klien.includes('window.location.href = "/siswa"'), false);
 });
 
-test("navigasi halaman Tailwind bisa digeser di layar sempit", () => {
+test("navigasi halaman Tailwind menyiapkan tab bar tanpa scroll horizontal", () => {
   const css = bacaFile("assets/css/style.css");
   const halaman = ["export.html", "siswa.html", "tambah.html", "rekap.html", "users.html"];
 
   assert.equal(css.includes(".nav-scroll > a"), true);
-  assert.equal(css.includes(".nav-scroll > button"), true);
 
   halaman.forEach((nama) => {
     const html = bacaFile(nama);
-    assert.equal(html.includes("nav-scroll min-w-0 overflow-x-auto whitespace-nowrap"), true, nama + " belum punya navigasi geser");
+    const tagNav = html.match(/<nav\b[^>]*>/);
+    assert.equal(html.includes("nav-scroll min-w-0 whitespace-nowrap"), true, nama + " belum siap memakai tab bar");
+    assert.equal(tagNav && tagNav[0].includes("overflow-x-auto"), false, nama + " navbar masih memakai scroll horizontal");
   });
 });
 
@@ -295,6 +296,52 @@ test("file dan folder terlarang diabaikan git", () => {
       nama + " masih terlacak di git"
     );
   });
+});
+
+test("modul navbar.js dimuat di seluruh halaman petugas", () => {
+  const halaman = [
+    "dashboard.html",
+    "kegiatan.html",
+    "export.html",
+    "siswa.html",
+    "tambah.html",
+    "rekap.html",
+    "users.html",
+  ];
+
+  halaman.forEach((nama) => {
+    assert.equal(bacaFile(nama).includes('src="assets/js/navbar.js"'), true, nama + " belum memuat navbar.js");
+  });
+});
+
+test("tab bar memakai menu utama dan tombol Lainnya tanpa scroll horizontal", () => {
+  const js = bacaFile("assets/js/navbar.js");
+  const css = bacaFile("assets/css/style.css");
+
+  // Empat menu utama yang selalu terlihat di tab bar.
+  assert.equal(js.includes('"Dashboard", "Siswa", "Kegiatan", "Export"'), true);
+
+  // Tombol hamburger dan panel dropdown dibuat saat halaman dimuat.
+  assert.equal(js.includes('className = "tabbar-menu"'), true);
+  assert.equal(js.includes('className = "tabbar-dropdown"'), true);
+  assert.equal(js.includes('setAttribute("aria-expanded"'), true);
+  assert.equal(js.includes("Escape"), true);
+
+  // Navbar fixed, tinggi ditambah, dan tidak bisa digeser kiri-kanan.
+  assert.equal(css.includes("min-height: 72px"), true);
+  assert.equal(css.includes("overflow: visible"), true);
+  assert.equal(css.includes(".tabbar-menu-ikon"), true);
+  assert.equal(css.includes(".tabbar-dropdown.buka"), true);
+  assert.equal(css.includes("bottom: calc(72px + env(safe-area-inset-bottom))"), true);
+});
+
+test("semua elemen dibuat responsif untuk tampilan HP", () => {
+  const css = bacaFile("assets/css/style.css");
+
+  assert.equal(css.includes("overflow-x: hidden"), true);
+  assert.equal(css.includes("overflow-wrap: break-word"), true);
+  assert.match(css, /main\s*\{[^}]*max-width:\s*100%/);
+  assert.match(css, /input,\s*textarea,\s*select\s*\{[^}]*max-width:\s*100%/);
 });
 
 test("file baru tidak memakai emoji atau ikon", () => {

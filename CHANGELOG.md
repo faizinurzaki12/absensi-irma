@@ -41,3 +41,13 @@
 - Perbaikan: menghapus pengujian migrasi SQL lama karena folder sql tidak lagi disertakan dalam repository.
 - Perbaikan: memastikan Agent.md dan TASKS.md tidak terlacak serta tidak ikut dikirim.
 - Perbaikan: menyesuaikan jumlah pengujian otomatis menjadi 33 pengujian.
+
+## Versi 1.4.0 - 18 November 2026
+- Perbaikan: tab bar handphone tidak lagi bisa digeser kiri-kanan dan tetap berada di bawah halaman (fixed).
+- Perbaikan: menu navigasi yang tidak muat dipindahkan ke tombol hamburger "Lainnya" dengan dropdown yang muncul ke atas.
+- Perbaikan: rekomendasi tab bar memakai 4 menu utama (Dashboard, Siswa, Kegiatan, Export) dan menu tambahan (Akun, Input Absensi, Rekap, Logout).
+- Perbaikan: tinggi tab bar ditambah agar lebih nyaman disentuh.
+- Perbaikan: dropdown bisa ditutup dengan klik di luar atau tombol Escape, serta menandai status buka/tutup lewat aria-expanded.
+- Perbaikan: menambahkan modul bersama assets/js/navbar.js agar susunan tab bar tidak duplikat di tujuh halaman.
+- Perbaikan: seluruh elemen dibuat lebih responsif di handphone dengan membatasi lebar maksimal dan mencegah teks keluar layar.
+- Perbaikan: menambahkan 3 pengujian otomatis sehingga total menjadi 36 pengujian.
