@@ -428,3 +428,279 @@ body {
     width: 100%;
   }
 }
+
+/* =========================================================
+   TAMBAHAN: EKSPOR DOKUMEN, AKSI EDIT/LIHAT, DAN MODAL
+   ========================================================= */
+
+/* Baris kontrol di sebelah judul halaman */
+.kegiatan-kontrol {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Tombol export memakai gaya hijau yang sama dengan tombol kirim */
+.kegiatan-tombol-export {
+  padding: 8px 16px;
+  border: 1px solid var(--hijau-utama);
+  border-radius: 8px;
+  background: var(--hijau-utama);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.kegiatan-tombol-export:hover {
+  background: var(--hijau-gelap);
+}
+
+/* Varian sekunder untuk tombol unduh di dalam modal */
+.kegiatan-tombol-export.sekunder {
+  background: #ffffff;
+  color: var(--hijau-gelap);
+}
+
+.kegiatan-tombol-export.sekunder:hover {
+  background: var(--hijau-muda);
+}
+
+/* Kumpulan tombol aksi pada satu sel tabel/kartu */
+.kegiatan-aksi {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kegiatan-tombol-lihat,
+.kegiatan-tombol-edit {
+  border: 0;
+  background: transparent;
+  color: var(--hijau-gelap);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.kegiatan-tombol-lihat:hover,
+.kegiatan-tombol-edit:hover {
+  text-decoration: underline;
+}
+
+/* Modal menutup seluruh layar dengan panel di tengah */
+.kegiatan-modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.kegiatan-modal-panel {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+}
+
+.kegiatan-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.kegiatan-modal-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.kegiatan-modal-tutup {
+  border: 0;
+  border-radius: 6px;
+  background: #f3f4f6;
+  color: var(--warna-teks);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.kegiatan-modal-tutup:hover {
+  background: #e5e7eb;
+}
+
+/* Detail kegiatan di modal lihat */
+.kegiatan-detail-label {
+  margin: 12px 0 2px;
+  color: var(--hijau-gelap);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.kegiatan-detail-nilai {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.kegiatan-detail-isi {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.kegiatan-modal-aksi {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* Di HP, tombol export dalam modal selebar panel */
+@media (max-width: 640px) {
+  .kegiatan-modal-aksi .kegiatan-tombol-export {
+    width: 100%;
+  }
+
+  .kegiatan-aksi {
+    justify-content: flex-start;
+  }
+}
+
+/* =========================================================
+   DASHBOARD OVERVIEW
+   Kartu ringkasan memakai gaya yang sama dengan halaman kegiatan.
+   ========================================================= */
+
+.dashboard-main {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 28px 16px 48px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+/* Dua panel besar: kiri aktivitas, kanan akses cepat */
+.dashboard-grid-dua {
+  grid-template-columns: 1fr;
+}
+
+.dashboard-card {
+  background: #ffffff;
+  border: 1px solid var(--warna-garis);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  padding: 18px;
+}
+
+.dashboard-card-angka {
+  margin: 0;
+  color: var(--hijau-utama);
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.dashboard-card-label {
+  margin: 6px 0 0;
+  color: var(--warna-abu);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.dashboard-card-judul {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.dashboard-top {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dashboard-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dashboard-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--hijau-muda);
+  font-size: 12px;
+}
+
+.dashboard-item-label {
+  font-weight: 600;
+}
+
+.dashboard-item-waktu {
+  color: var(--warna-abu);
+  white-space: nowrap;
+}
+
+.dashboard-kosong {
+  margin: 0;
+  padding: 14px 0;
+  color: var(--warna-abu);
+  font-size: 13px;
+  text-align: center;
+}
+
+.dashboard-cepat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dashboard-cepat .kegiatan-tombol-export {
+  text-decoration: none;
+}
+
+/* Pada laptop, dua panel utama berdampingan */
+@media (min-width: 768px) {
+  .dashboard-grid-dua {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dashboard-main {
+    padding: 32px 20px 56px;
+  }
+}

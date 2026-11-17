@@ -7,3 +7,14 @@
 - Feat: menambahkan menu Kegiatan pada navigasi seluruh halaman petugas.
 - Feat: menambahkan migrasi SQL tabel_kegiatan beserta kebijakan Row Level Security.
 - Feat: menambahkan 14 pengujian otomatis untuk validasi form, keamanan HTML, format tanggal, urutan data, dan struktur halaman.
+
+
+## Versi 1.1.0 - 17 November 2026
+- Feat: menambahkan tombol Export Dokumen pada halaman kegiatan untuk mengunduh rekap Proker IRMA dalam format .doc.
+- Feat: menambahkan aksi Lihat, Edit, dan Hapus pada tabel serta kartu kegiatan, lengkap dengan modal detail dan modal edit.
+- Feat: menambahkan tombol Export ke Google Dokumen pada modal detail dengan format awal mengikuti PROKER IRMA 2024.docx.
+- Feat: menata rekap kehadiran di halaman export menjadi dua kolom kiri dan kanan pada layar besar.
+- Feat: mencatat siswa paling rajin kelas XII dan X, baik untuk periode yang difilter maupun seluruh periode.
+- Feat: menambahkan halaman Dashboard Overview berisi ringkasan sistem, siswa paling rajin, dan aktivitas terbaru.
+- Feat: mengubah export Excel menjadi kolom nama_siswa, kelas, dan kehadiran tiap bulan sesuai filter yang dipilih.
+- Feat: menambahkan 12 pengujian otomatis untuk logika dokumen, Excel, dashboard, dan struktur halaman.

@@ -21,6 +21,7 @@
       <div class="kegiatan-header-inner">
         <div class="kegiatan-brand">Absensi IRMA</div>
         <nav class="kegiatan-nav" aria-label="Navigasi utama">
+          <a href="/dashboard" class="kegiatan-nav-link">Dashboard</a>
           <a href="/users" class="kegiatan-nav-link">Akun</a>
           <a href="/siswa" class="kegiatan-nav-link">Siswa</a>
           <a href="/tambah" class="kegiatan-nav-link">Input Absensi</a>
@@ -38,7 +39,10 @@
           <h1>Kegiatan Kumpulan IRMA</h1>
           <p class="kegiatan-subjudul">Catat judul, tanggal, dan isi kegiatan kumpulan.</p>
         </div>
-        <span id="status-jaringan" class="kegiatan-status">Online</span>
+        <div class="kegiatan-kontrol">
+          <span id="status-jaringan" class="kegiatan-status">Online</span>
+          <button type="button" id="tombol-export-dokumen" class="kegiatan-tombol-export">Export Dokumen</button>
+        </div>
       </div>
 
       <div id="notifikasi-kegiatan" class="kegiatan-notifikasi" hidden></div>
@@ -111,9 +115,56 @@
       </section>
     </main>
 
+    <!-- MODAL LIHAT DETAIL KEGIATAN -->
+    <div id="modal-lihat" class="kegiatan-modal" hidden>
+      <div class="kegiatan-modal-panel">
+        <div class="kegiatan-modal-header">
+          <h2>Detail Kegiatan</h2>
+          <button type="button" class="kegiatan-modal-tutup" data-tutup-modal="modal-lihat">Tutup</button>
+        </div>
+        <p class="kegiatan-detail-label">Judul Kumpulan</p>
+        <p id="detail-judul" class="kegiatan-detail-nilai"></p>
+        <p class="kegiatan-detail-label">Tanggal Kegiatan</p>
+        <p id="detail-tanggal" class="kegiatan-detail-nilai"></p>
+        <p class="kegiatan-detail-label">Isi Kegiatan</p>
+        <p id="detail-isi" class="kegiatan-detail-isi"></p>
+        <div class="kegiatan-modal-aksi">
+          <button type="button" id="tombol-google-docs" class="kegiatan-tombol-export">Export ke Google Dokumen</button>
+          <button type="button" id="tombol-unduh-doc" class="kegiatan-tombol-export sekunder">Unduh Dokumen .doc</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL EDIT KEGIATAN -->
+    <div id="modal-edit" class="kegiatan-modal" hidden>
+      <div class="kegiatan-modal-panel">
+        <div class="kegiatan-modal-header">
+          <h2>Edit Kegiatan</h2>
+          <button type="button" class="kegiatan-modal-tutup" data-tutup-modal="modal-edit">Tutup</button>
+        </div>
+        <form id="form-edit-kegiatan" class="kegiatan-form">
+          <input type="hidden" id="edit_id" />
+          <div class="kegiatan-field">
+            <label class="kegiatan-label" for="edit_judul_kumpulan">Judul Kumpulan</label>
+            <input type="text" id="edit_judul_kumpulan" class="kegiatan-input" maxlength="150" required />
+          </div>
+          <div class="kegiatan-field">
+            <label class="kegiatan-label" for="edit_tanggal_kegiatan">Tanggal Kegiatan</label>
+            <input type="date" id="edit_tanggal_kegiatan" class="kegiatan-input" required />
+          </div>
+          <div class="kegiatan-field">
+            <label class="kegiatan-label" for="edit_isi_kegiatan">Isi Kegiatan</label>
+            <textarea id="edit_isi_kegiatan" class="kegiatan-textarea" rows="5" maxlength="5000" required></textarea>
+          </div>
+          <button type="submit" class="kegiatan-tombol-kirim">Simpan Perubahan</button>
+        </form>
+      </div>
+    </div>
+
     <script src="assets/js/supabase-client.js"></script>
     <script src="assets/js/offline-store.js"></script>
     <script src="assets/js/kegiatan-logic.js"></script>
+    <script src="assets/js/laporan-logic.js"></script>
     <script src="assets/js/kegiatan-page.js"></script>
   </body>
 </html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Overview - Absensi IRMA</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+  </head>
+  <body class="halaman-kegiatan">
+    <header class="kegiatan-header">
+      <div class="kegiatan-header-inner">
+        <div class="kegiatan-brand">Absensi IRMA</div>
+        <nav class="kegiatan-nav" aria-label="Navigasi utama">
+          <a href="/dashboard" class="kegiatan-nav-link aktif">Dashboard</a>
+          <a href="/users" class="kegiatan-nav-link">Akun</a>
+          <a href="/siswa" class="kegiatan-nav-link">Siswa</a>
+          <a href="/tambah" class="kegiatan-nav-link">Input Absensi</a>
+          <a href="/rekap" class="kegiatan-nav-link">Rekap</a>
+          <a href="/kegiatan" class="kegiatan-nav-link">Kegiatan</a>
+          <a href="/export" class="kegiatan-nav-link">Export</a>
+          <button type="button" onclick="logout()" class="kegiatan-nav-link kegiatan-logout">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      <div class="kegiatan-judul-halaman">
+        <div>
+          <h1>Dashboard Overview</h1>
+          <p class="kegiatan-subjudul">Ringkasan seluruh data absensi, siswa, dan kegiatan IRMA.</p>
+        </div>
+        <span id="status-jaringan" class="kegiatan-status">Online</span>
+      </div>
+
+      <div id="notifikasi-dashboard" class="kegiatan-notifikasi" hidden></div>
+
+      <!-- ANGKA RINGKASAN SISTEM -->
+      <section class="dashboard-grid">
+        <div class="dashboard-card">
+          <p id="angka-siswa" class="dashboard-card-angka">0</p>
+          <p class="dashboard-card-label">Total Siswa</p>
+        </div>
+        <div class="dashboard-card">
+          <p id="angka-absensi" class="dashboard-card-angka">0</p>
+          <p class="dashboard-card-label">Total Absensi</p>
+        </div>
+        <div class="dashboard-card">
+          <p id="angka-hadir" class="dashboard-card-angka">0</p>
+          <p class="dashboard-card-label">Total Kehadiran</p>
+        </div>
+        <div class="dashboard-card">
+          <p id="angka-kegiatan" class="dashboard-card-angka">0</p>
+          <p class="dashboard-card-label">Total Kegiatan</p>
+        </div>
+        <div class="dashboard-card">
+          <p id="angka-petugas" class="dashboard-card-angka">0</p>
+          <p class="dashboard-card-label">Total Petugas</p>
+        </div>
+      </section>
+
+      <!-- SISWA PALING RAJIN XII & X (SELURUH PERIODE) -->
+      <section class="dashboard-grid dashboard-grid-dua">
+        <div class="dashboard-card">
+          <p class="dashboard-card-label">Paling Rajin Kelas XII</p>
+          <p id="dashboard-top-xii" class="dashboard-top">Memuat...</p>
+        </div>
+        <div class="dashboard-card">
+          <p class="dashboard-card-label">Paling Rajin Kelas X</p>
+          <p id="dashboard-top-x" class="dashboard-top">Memuat...</p>
+        </div>
+      </section>
+
+      <!-- AKTIVITAS TERBARU DAN AKSES CEPAT -->
+      <section class="dashboard-grid dashboard-grid-dua">
+        <div class="dashboard-card">
+          <h2 class="dashboard-card-judul">Aktivitas Terbaru</h2>
+          <div id="dashboard-aktivitas" class="dashboard-lista">
+            <p class="dashboard-kosong">Memuat aktivitas...</p>
+          </div>
+        </div>
+        <div class="dashboard-card">
+          <h2 class="dashboard-card-judul">Akses Cepat</h2>
+          <div class="dashboard-cepat">
+            <a href="/siswa" class="kegiatan-tombol-export">Kelola Siswa</a>
+            <a href="/tambah" class="kegiatan-tombol-export">Input Absensi</a>
+            <a href="/kegiatan" class="kegiatan-tombol-export">Input Kegiatan</a>
+            <a href="/export" class="kegiatan-tombol-export">Export Laporan</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/offline-store.js"></script>
+    <script src="assets/js/laporan-logic.js"></script>
+    <script src="assets/js/dashboard-page.js"></script>
+  </body>
+</html>

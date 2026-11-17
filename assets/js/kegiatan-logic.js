@@ -167,9 +167,17 @@
           escapeHtml(ringkasIsi(item.isi_kegiatan || "-", 100)) +
           "</td>" +
           '<td class="kegiatan-sel-aksi">' +
+          '<div class="kegiatan-aksi">' +
+          '<button type="button" class="kegiatan-tombol-lihat" data-lihat-kegiatan="' +
+          escapeHtml(item.id) +
+          '">Lihat</button>' +
+          '<button type="button" class="kegiatan-tombol-edit" data-edit-kegiatan="' +
+          escapeHtml(item.id) +
+          '">Edit</button>' +
           '<button type="button" class="kegiatan-tombol-hapus" data-hapus-kegiatan="' +
           escapeHtml(item.id) +
           '">Hapus</button>' +
+          "</div>" +
           "</td>" +
           "</tr>"
         );
@@ -188,9 +196,17 @@
           escapeHtml(item.judul_kumpulan || "-") +
           badgePending(item) +
           "</p>" +
+          '<div class="kegiatan-aksi">' +
+          '<button type="button" class="kegiatan-tombol-lihat" data-lihat-kegiatan="' +
+          escapeHtml(item.id) +
+          '">Lihat</button>' +
+          '<button type="button" class="kegiatan-tombol-edit" data-edit-kegiatan="' +
+          escapeHtml(item.id) +
+          '">Edit</button>' +
           '<button type="button" class="kegiatan-tombol-hapus" data-hapus-kegiatan="' +
           escapeHtml(item.id) +
           '">Hapus</button>' +
+          "</div>" +
           "</div>" +
           '<p class="kegiatan-item-tanggal">Tanggal: ' +
           formatTanggalIndonesia(item.tanggal_kegiatan) +

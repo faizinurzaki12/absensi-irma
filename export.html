@@ -11,8 +11,9 @@
   <body class="bg-gray-50 min-h-screen">
     <header class="bg-emerald-600 text-white shadow-md">
       <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
-        <div class="flex items-center gap-2 font-bold text-lg">🕌 Absensi IRMA</div>
+        <div class="flex items-center gap-2 font-bold text-lg">Absensi IRMA</div>
         <nav class="flex items-center gap-1 text-sm flex-wrap">
+          <a href="/dashboard" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Dashboard</a>
           <a href="/users" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Akun</a>
           <a href="/siswa" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Siswa</a>
           <a href="/tambah" class="px-3 py-1.5 rounded-lg hover:bg-emerald-700 transisi">Input Absensi</a>
@@ -24,10 +25,10 @@
       </div>
     </header>
 
-    <main class="max-w-xl mx-auto px-4 py-6 sm:py-8">
+    <main class="max-w-5xl mx-auto px-4 py-6 sm:py-8">
       <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
         <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Export Laporan Absensi</h1>
-        <span id="status-jaringan" class="text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">🌐 Online</span>
+        <span id="status-jaringan" class="text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">Online</span>
       </div>
 
       <div class="bg-white rounded-2xl shadow p-4 sm:p-6 border border-gray-100">
@@ -50,21 +51,26 @@
           </div>
         </div>
 
-        <!-- INFO SISWA PALING RAJIN KELAS X & XI -->
+        <!-- INFO SISWA PALING RAJIN KELAS XII & X -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
           <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-3.5 sm:p-4 text-left">
-            <p class="text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1">🌟 TERAJIN KELAS X</p>
-            <p id="top-siswa-x" class="text-sm font-bold text-gray-800">Memuat...</p>
+            <p class="text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1">TERAJIN KELAS XII</p>
+            <p id="top-siswa-xii" class="text-sm font-bold text-gray-800">Memuat...</p>
+            <p id="top-siswa-xii-periode" class="text-xs text-gray-500 mt-1">Seluruh periode: Memuat...</p>
           </div>
           <div class="bg-emerald-50/60 border border-emerald-100 rounded-xl p-4 text-left">
-            <p class="text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1">🌟 TERAJIN KELAS XI</p>
-            <p id="top-siswa-xi" class="text-sm font-bold text-gray-800">Memuat...</p>
+            <p class="text-xs font-semibold text-emerald-800 uppercase tracking-wide mb-1">TERAJIN KELAS X</p>
+            <p id="top-siswa-x" class="text-sm font-bold text-gray-800">Memuat...</p>
+            <p id="top-siswa-x-periode" class="text-xs text-gray-500 mt-1">Seluruh periode: Memuat...</p>
           </div>
         </div>
 
+        <!-- DUA REKAP UTAMA DITATA KIRI DAN KANAN PADA LAYAR BESAR -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+
         <!-- 1. TABEL REKAP KUMULATIF SELURUH PERIODE -->
-        <div class="mb-6">
-          <h3 class="text-sm font-bold text-gray-700 mb-2">🏆 Rekap Total Kehadiran (Kelas X & XI - Seluruh Periode)</h3>
+        <div>
+          <h3 class="text-sm font-bold text-gray-700 mb-2">Rekap Total Kehadiran (Kelas XII & X - Seluruh Periode)</h3>
           
           <!-- MOBILE VIEW (CARD) -->
           <div id="card-rekap-periode" class="block sm:hidden space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -89,8 +95,8 @@
         </div>
 
         <!-- 2. TABEL REKAP BULANAN -->
-        <div class="mb-6">
-          <h3 id="judul-rekap-bulanan" class="text-sm font-bold text-gray-700 mb-2">📅 Rekap Bulanan Kehadiran (Kelas X & XI)</h3>
+        <div>
+          <h3 id="judul-rekap-bulanan" class="text-sm font-bold text-gray-700 mb-2">Rekap Bulanan Kehadiran (Kelas XII & X)</h3>
           
           <!-- MOBILE VIEW (CARD) -->
           <div id="card-rekap-bulanan" class="block sm:hidden space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -112,6 +118,7 @@
               </tbody>
             </table>
           </div>
+        </div>
         </div>
 
         <!-- 3. TABEL RINCIAN UMUM -->
@@ -143,11 +150,11 @@
         <p id="info-offline" class="hidden text-xs text-amber-600 mb-5 text-center">Termasuk data yang belum sinkron ke server</p>
 
         <div id="peringatan-offline" class="hidden mb-4 bg-red-50 text-red-600 text-sm px-4 py-2 rounded-lg border border-red-200 text-left">
-          📴 Export laporan butuh koneksi internet. Sambungkan kembali ke internet untuk mengunduh.
+          Export laporan butuh koneksi internet. Sambungkan kembali ke internet untuk mengunduh.
         </div>
 
         <button id="btn-export" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transisi disabled:bg-gray-300 disabled:cursor-not-allowed">
-          ⬇️ Download Laporan Excel
+          Download Laporan Excel
         </button>
         <p id="pesan-export" class="text-sm text-emerald-600 font-medium mt-3 hidden text-center"></p>
       </div>
@@ -156,14 +163,29 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="assets/js/supabase-client.js"></script>
     <script src="assets/js/offline-store.js"></script>
-    <script src="assets/js/app.js"></script>
+    <script src="assets/js/laporan-logic.js"></script>
     <script>
+      const Laporan = window.LaporanLogic;
       let semuaData = [];
+      let daftarAbsensiMentah = [];
+      let daftarSiswaMentah = [];
+
+      // Status koneksi memakai teks biasa supaya tidak ada emoji di halaman.
+      function perbaruiStatusJaringan() {
+        const status = document.getElementById("status-jaringan");
+        if (!status) return;
+        status.textContent = navigator.onLine ? "Online" : "Offline";
+        status.className = navigator.onLine
+          ? "text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full"
+          : "text-xs sm:text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full";
+      }
 
       async function init() {
         const session = await requireAuth();
         if (!session) return;
-        initNetworkStatus("status-jaringan");
+        perbaruiStatusJaringan();
+        window.addEventListener("online", perbaruiStatusJaringan);
+        window.addEventListener("offline", perbaruiStatusJaringan);
         perbaruiStatusExport();
         window.addEventListener("online", perbaruiStatusExport);
         window.addEventListener("offline", perbaruiStatusExport);
@@ -182,6 +204,9 @@
           typeof dbSelect === "function" ? dbSelect("tabel_absensi") : Promise.resolve([]),
           typeof dbSelect === "function" ? dbSelect("tabel_siswa") : Promise.resolve([])
         ]);
+
+        daftarAbsensiMentah = Array.isArray(absensi) ? absensi : [];
+        daftarSiswaMentah = Array.isArray(siswa) ? siswa : [];
 
         const petaSiswa = {};
         if (Array.isArray(siswa)) {
@@ -209,7 +234,7 @@
         }
       }
 
-      // 1. Rekap Kumulatif Seluruh Periode (Khusus Kelas X & XI)
+      // 1. Rekap Kumulatif Seluruh Periode (Khusus Kelas XII & X)
       function hitungRekapPeriodeKelasXdanXI(dataList) {
         const rekapKumulatif = {};
 
@@ -218,12 +243,10 @@
           if (statusVal.toLowerCase() !== 'hadir') return;
 
           const kelas = item.kelas || "";
-          const kelasUpper = kelas.toUpperCase();
+          const isKelasX = Laporan.kelasTermasuk(kelas, "X");
+          const isKelasXII = Laporan.kelasTermasuk(kelas, "XII");
 
-          const isKelasX = kelasUpper.startsWith("X ") || kelasUpper.startsWith("X-") || kelasUpper === "X";
-          const isKelasXI = kelasUpper.startsWith("XI") && !kelasUpper.startsWith("XII");
-
-          if (isKelasX || isKelasXI) {
+          if (isKelasX || isKelasXII) {
             const nama = item.nama_siswa;
             const key = `${nama}_${kelas}`;
 
@@ -245,8 +268,8 @@
         cardPeriode.innerHTML = "";
 
         if (listPeriode.length === 0) {
-          tbodyPeriode.innerHTML = `<tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Belum ada data kehadiran untuk Kelas X & XI.</td></tr>`;
-          cardPeriode.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">Belum ada data kehadiran Kelas X & XI.</p>`;
+          tbodyPeriode.innerHTML = `<tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Belum ada data kehadiran untuk Kelas XII & X.</td></tr>`;
+          cardPeriode.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">Belum ada data kehadiran Kelas XII & X.</p>`;
           return;
         }
 
@@ -285,7 +308,7 @@
         const namaBulanStr = namaBulanList[parseInt(targetBulan, 10) - 1];
 
         document.getElementById("label-bulan").textContent = `Hadir (${namaBulanStr} ${targetTahun})`;
-        document.getElementById("judul-rekap-bulanan").textContent = `📅 Rekap Bulanan Kehadiran (${namaBulanStr} ${targetTahun} - Kelas X & XI)`;
+        document.getElementById("judul-rekap-bulanan").textContent = `Rekap Bulanan Kehadiran (${namaBulanStr} ${targetTahun} - Kelas XII & X)`;
 
         const dataBulanIni = dataList.filter(item => {
           const tglStr = item.tanggal_kegiatan || item.tanggal || item.created_at || "";
@@ -303,9 +326,7 @@
         document.getElementById("total-bulan-ini").textContent = dataBulanIni.length;
 
         const rekapSiswa = {};
-        const rekapBulananX_XI = {};
-        const rekapKelasX = {};
-        const rekapKelasXI = {};
+        const rekapBulananX_XII = {};
 
         dataBulanIni.forEach(item => {
           const nama = item.nama_siswa;
@@ -317,35 +338,37 @@
           }
           rekapSiswa[key].totalHadir += 1;
 
-          const kelasUpper = kelas.toUpperCase();
-          const isKelasX = kelasUpper.startsWith("X ") || kelasUpper.startsWith("X-") || kelasUpper === "X";
-          const isKelasXI = kelasUpper.startsWith("XI") && !kelasUpper.startsWith("XII");
+          const isKelasX = Laporan.kelasTermasuk(kelas, "X");
+          const isKelasXII = Laporan.kelasTermasuk(kelas, "XII");
 
-          if (isKelasX || isKelasXI) {
-            if (!rekapBulananX_XI[key]) {
-              rekapBulananX_XI[key] = { nama, kelas, totalHadir: 0 };
+          if (isKelasX || isKelasXII) {
+            if (!rekapBulananX_XII[key]) {
+              rekapBulananX_XII[key] = { nama, kelas, totalHadir: 0 };
             }
-            rekapBulananX_XI[key].totalHadir += 1;
-          }
-
-          if (isKelasX) {
-            if (!rekapKelasX[key]) rekapKelasX[key] = { nama, kelas, totalHadir: 0 };
-            rekapKelasX[key].totalHadir += 1;
-          } else if (isKelasXI) {
-            if (!rekapKelasXI[key]) rekapKelasXI[key] = { nama, kelas, totalHadir: 0 };
-            rekapKelasXI[key].totalHadir += 1;
+            rekapBulananX_XII[key].totalHadir += 1;
           }
         });
 
-        // Set Terajin Kelas X & XI Bulanan
-        const listX = Object.values(rekapKelasX).sort((a, b) => b.totalHadir - a.totalHadir);
-        document.getElementById("top-siswa-x").textContent = listX.length > 0 ? `${listX[0].nama} (${listX[0].kelas}) - ${listX[0].totalHadir}x Hadir` : "Belum ada data Kelas X";
+        // Siswa paling rajin XII & X: bulan terpilih dan seluruh periode.
+        const formatTerajin = (hasil, kelas) => hasil
+          ? `${hasil.nama} (${hasil.kelas}) - ${hasil.total}x Hadir`
+          : `Belum ada data Kelas ${kelas}`;
 
-        const listXI = Object.values(rekapKelasXI).sort((a, b) => b.totalHadir - a.totalHadir);
-        document.getElementById("top-siswa-xi").textContent = listXI.length > 0 ? `${listXI[0].nama} (${listXI[0].kelas}) - ${listXI[0].totalHadir}x Hadir` : "Belum ada data Kelas XI";
+        document.getElementById("top-siswa-xii").textContent = formatTerajin(
+          Laporan.hitungTerajin(daftarAbsensiMentah, daftarSiswaMentah, "XII", nilaiInput), "XII"
+        );
+        document.getElementById("top-siswa-x").textContent = formatTerajin(
+          Laporan.hitungTerajin(daftarAbsensiMentah, daftarSiswaMentah, "X", nilaiInput), "X"
+        );
+        document.getElementById("top-siswa-xii-periode").textContent = "Seluruh periode: " + formatTerajin(
+          Laporan.hitungTerajin(daftarAbsensiMentah, daftarSiswaMentah, "XII", ""), "XII"
+        );
+        document.getElementById("top-siswa-x-periode").textContent = "Seluruh periode: " + formatTerajin(
+          Laporan.hitungTerajin(daftarAbsensiMentah, daftarSiswaMentah, "X", ""), "X"
+        );
 
-        // Render Rekap Bulanan (X & XI)
-        const listBulanan = Object.values(rekapBulananX_XI).sort((a, b) => b.totalHadir - a.totalHadir);
+        // Render Rekap Bulanan (XII & X)
+        const listBulanan = Object.values(rekapBulananX_XII).sort((a, b) => b.totalHadir - a.totalHadir);
         const tbodyBulanan = document.getElementById("tabel-rekap-bulanan");
         const cardBulanan = document.getElementById("card-rekap-bulanan");
         
@@ -353,8 +376,8 @@
         cardBulanan.innerHTML = "";
 
         if (listBulanan.length === 0) {
-          tbodyBulanan.innerHTML = `<tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Tidak ada data kehadiran Kelas X & XI di bulan ini.</td></tr>`;
-          cardBulanan.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">Tidak ada data kehadiran Kelas X & XI di bulan ini.</p>`;
+          tbodyBulanan.innerHTML = `<tr><td colspan="3" class="px-3 py-4 text-center text-gray-400">Tidak ada data kehadiran Kelas XII & X di bulan ini.</td></tr>`;
+          cardBulanan.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">Tidak ada data kehadiran Kelas XII & X di bulan ini.</p>`;
         } else {
           listBulanan.forEach(item => {
             // Desktop
@@ -443,30 +466,37 @@
           return;
         }
 
-        if (semuaData.length === 0) {
+        if (daftarAbsensiMentah.length === 0) {
           alert("Belum ada data absensi untuk diekspor.");
           return;
         }
 
-        const tanggalSekarang = new Date().toISOString().slice(0, 10);
-        const namaFile = `laporan_absensi_irma_${tanggalSekarang}.xlsx`;
+        const filterBulan = document.getElementById("filter-bulan").value;
+        const barisExcel = Laporan.bangunBarisExcelKehadiran(
+          daftarAbsensiMentah,
+          daftarSiswaMentah,
+          filterBulan
+        );
 
-        if (typeof unduhExcel === "function") {
-          unduhExcel(namaFile, semuaData);
-        } else {
-          const ws = XLSX.utils.json_to_sheet(semuaData.map(item => ({
-            "Tanggal": item.tanggal_kegiatan || item.tanggal || "-",
-            "Nama Siswa": item.nama_siswa,
-            "Kelas": item.kelas,
-            "Status Kehadiran": item.status_kehadiran || item.status || "-"
-          })));
-          const wb = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(wb, ws, "Laporan Absensi");
-          XLSX.writeFile(wb, namaFile);
+        if (barisExcel.length === 0) {
+          alert("Tidak ada data kehadiran pada periode yang dipilih.");
+          return;
         }
 
+        const tanggalSekarang = new Date().toISOString().slice(0, 10);
+        const namaFile = `laporan_absensi_irma_${filterBulan || tanggalSekarang}.xlsx`;
+
+        // Kolom pertama nama_siswa dan kelas, sisanya kehadiran per bulan.
+        const ws = XLSX.utils.json_to_sheet(barisExcel);
+        ws["!cols"] = [{ wch: 25 }, { wch: 14 }].concat(
+          Object.keys(barisExcel[0] || {}).slice(2).map(() => ({ wch: 16 }))
+        );
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Kehadiran Bulanan");
+        XLSX.writeFile(wb, namaFile);
+
         const pesan = document.getElementById("pesan-export");
-        pesan.textContent = `✅ File "${namaFile}" berhasil diunduh.`;
+        pesan.textContent = `File "${namaFile}" berhasil diunduh dengan kolom nama_siswa, kelas, dan kehadiran per bulan.`;
         pesan.classList.remove("hidden");
       });
 

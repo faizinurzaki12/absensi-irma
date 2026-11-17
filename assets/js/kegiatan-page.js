@@ -13,6 +13,10 @@
   "use strict";
 
   var Logic = window.KegiatanLogic;
+  var Laporan = window.LaporanLogic;
+
+  // Salinan data terakhir dipakai modal lihat/edit tanpa menaruh JSON di atribut HTML.
+  var daftarKegiatanCache = [];
 
   /** Ambil elemen berdasarkan id. */
   function elemen(id) {
@@ -71,6 +75,7 @@
 
     var data = typeof dbSelect === "function" ? await dbSelect("tabel_kegiatan") : [];
     var urut = Logic.urutanKegiatan(data || []);
+    daftarKegiatanCache = urut;
 
     if (jumlah) jumlah.textContent = urut.length;
 
@@ -82,6 +87,102 @@
 
     tbody.innerHTML = Logic.renderTabelKegiatan(urut);
     kartu.innerHTML = Logic.renderKartuKegiatan(urut);
+  }
+
+  /** Cari kegiatan dari cache memakai id yang ada pada tombol aksi. */
+  function cariKegiatan(id) {
+    return daftarKegiatanCache.find(function (item) {
+      return String(item.id) === String(id);
+    });
+  }
+
+  /** Buka dan tutup modal berdasarkan id elemen. */
+  function bukaModal(idModal) {
+    var modal = elemen(idModal);
+    if (modal) modal.hidden = false;
+  }
+
+  function tutupModal(idModal) {
+    var modal = elemen(idModal);
+    if (modal) modal.hidden = true;
+  }
+
+  /** Isi modal lihat dengan detail kegiatan terpilih. */
+  function tampilkanDetail(item) {
+    if (!item) return;
+    elemen("detail-judul").textContent = item.judul_kumpulan || "-";
+    elemen("detail-tanggal").textContent = Logic.formatTanggalIndonesia(item.tanggal_kegiatan);
+    elemen("detail-isi").textContent = item.isi_kegiatan || "-";
+    bukaModal("modal-lihat");
+  }
+
+  /** Isi modal edit dengan data kegiatan terpilih. */
+  function tampilkanEdit(item) {
+    if (!item) return;
+    elemen("edit_id").value = item.id;
+    elemen("edit_judul_kumpulan").value = item.judul_kumpulan || "";
+    elemen("edit_tanggal_kegiatan").value = item.tanggal_kegiatan || "";
+    elemen("edit_isi_kegiatan").value = item.isi_kegiatan || "";
+    bukaModal("modal-edit");
+  }
+
+  /** Susun dokumen Proker dari semua kegiatan yang tercatat. */
+  function dokumenDariSemuaKegiatan() {
+    return Laporan.bangunDokumenProker(daftarKegiatanCache, { tahun: new Date().getFullYear() });
+  }
+
+  /** Ubah HTML dokumen menjadi teks biasa untuk clipboard fallback. */
+  function dokumenKeTeks(html) {
+    var penampung = document.createElement("div");
+    penampung.innerHTML = html;
+    return (penampung.textContent || "").replace(/\n{3,}/g, "\n\n").trim();
+  }
+
+  /**
+   * Salin dokumen berformat ke clipboard, lalu buka halaman pembuatan
+   * Google Dokumen. Pengguna tinggal menempel hasil salinan tersebut.
+   */
+  async function exportKeGoogleDokumen() {
+    var html = dokumenDariSemuaKegiatan();
+    var teks = dokumenKeTeks(html);
+
+    try {
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([
+          new window.ClipboardItem({
+            "text/html": new Blob([html], { type: "text/html" }),
+            "text/plain": new Blob([teks], { type: "text/plain" }),
+          }),
+        ]);
+      } else {
+        var penampung = document.createElement("textarea");
+        penampung.value = teks;
+        document.body.appendChild(penampung);
+        penampung.select();
+        document.execCommand("copy");
+        document.body.removeChild(penampung);
+      }
+
+      tampilkanPesan("Format dokumen tersalin. Tempelkan pada Google Dokumen yang terbuka.");
+      window.open("https://docs.google.com/document/u/0/create", "_blank", "noopener");
+    } catch (error) {
+      tampilkanPesan("Gagal menyalin otomatis. Gunakan tombol unduh dokumen .doc.", "gagal");
+    }
+  }
+
+  /** Unduh file .doc yang kompatibel dengan Word dan Google Dokumen. */
+  function unduhDokumenDoc() {
+    var tahun = new Date().getFullYear();
+    var blob = new Blob([dokumenDariSemuaKegiatan()], { type: "application/msword" });
+    var url = URL.createObjectURL(blob);
+    var tautan = document.createElement("a");
+    tautan.href = url;
+    tautan.download = "proker_irma_" + tahun + ".doc";
+    document.body.appendChild(tautan);
+    tautan.click();
+    document.body.removeChild(tautan);
+    URL.revokeObjectURL(url);
+    tampilkanPesan("Dokumen Proker IRMA berhasil diunduh.");
   }
 
   /** Pasang semua event handler setelah pengguna terautentikasi. */
@@ -122,17 +223,64 @@
       await muatDaftarKegiatan();
     });
 
-    // Satu handler untuk semua tombol hapus, baik di tabel maupun di kartu.
+    // Satu handler untuk seluruh tombol aksi di tabel, kartu, dan modal.
     document.addEventListener("click", async function (event) {
-      var tombol = event.target.closest("[data-hapus-kegiatan]");
-      if (!tombol) return;
+      var target = event.target;
+
+      var tombolTutup = target.closest("[data-tutup-modal]");
+      if (tombolTutup) {
+        tutupModal(tombolTutup.getAttribute("data-tutup-modal"));
+        return;
+      }
+
+      var tombolLihat = target.closest("[data-lihat-kegiatan]");
+      if (tombolLihat) {
+        tampilkanDetail(cariKegiatan(tombolLihat.getAttribute("data-lihat-kegiatan")));
+        return;
+      }
+
+      var tombolEdit = target.closest("[data-edit-kegiatan]");
+      if (tombolEdit) {
+        tampilkanEdit(cariKegiatan(tombolEdit.getAttribute("data-edit-kegiatan")));
+        return;
+      }
+
+      var tombolHapus = target.closest("[data-hapus-kegiatan]");
+      if (!tombolHapus) return;
       if (!window.confirm("Hapus kegiatan ini?")) return;
 
-      await dbDelete("tabel_kegiatan", tombol.getAttribute("data-hapus-kegiatan"));
+      await dbDelete("tabel_kegiatan", tombolHapus.getAttribute("data-hapus-kegiatan"));
       tampilkanPesan("Kegiatan dihapus.");
       perbaruiInfoAntrean();
       await muatDaftarKegiatan();
     });
+
+    // Simpan perubahan dari modal edit memakai lapisan offline-store.
+    elemen("form-edit-kegiatan").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      var hasil = Logic.validasiKegiatan({
+        judul_kumpulan: elemen("edit_judul_kumpulan").value,
+        tanggal_kegiatan: elemen("edit_tanggal_kegiatan").value,
+        isi_kegiatan: elemen("edit_isi_kegiatan").value,
+      });
+
+      if (!hasil.valid) {
+        tampilkanPesan(Logic.pesanPertama(hasil.errors), "gagal");
+        return;
+      }
+
+      await dbUpdate("tabel_kegiatan", elemen("edit_id").value, hasil.data);
+      tutupModal("modal-edit");
+      tampilkanPesan("Perubahan kegiatan disimpan.");
+      perbaruiInfoAntrean();
+      await muatDaftarKegiatan();
+    });
+
+    // Tombol export dokumen: unduh .doc, salin ke Google Dokumen, atau keduanya.
+    elemen("tombol-export-dokumen").addEventListener("click", unduhDokumenDoc);
+    elemen("tombol-google-docs").addEventListener("click", exportKeGoogleDokumen);
+    elemen("tombol-unduh-doc").addEventListener("click", unduhDokumenDoc);
 
     window.addEventListener("online", perbaruiStatusJaringan);
     window.addEventListener("offline", perbaruiStatusJaringan);
