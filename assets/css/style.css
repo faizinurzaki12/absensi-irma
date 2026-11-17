@@ -22,6 +22,18 @@ body {
   transition: all 0.15s ease-in-out;
 }
 
+/* Navigasi halaman Tailwind: satu baris yang bisa digeser di layar sempit
+   supaya tidak menumpuk banyak baris di handphone. */
+.nav-scroll {
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-scroll > a,
+.nav-scroll > button {
+  flex: 0 0 auto;
+}
+
 /* =========================================================
    HALAMAN KEGIATAN KUMPULAN IRMA
    Gaya khusus fitur kegiatan. Semua class diawali "kegiatan-"
@@ -419,12 +431,18 @@ body {
   }
 
   .kegiatan-nav {
+    width: 100%;
     gap: 2px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .kegiatan-nav-link {
     font-size: 12px;
     padding: 5px 9px;
+    white-space: nowrap;
   }
 
   .kegiatan-main {
@@ -613,6 +631,27 @@ body {
   .kegiatan-aksi {
     justify-content: flex-start;
   }
+
+  /* Status dan tombol export memakai lebar penuh agar rapi */
+  .kegiatan-kontrol {
+    width: 100%;
+  }
+
+  .kegiatan-kontrol .kegiatan-tombol-export {
+    flex: 1;
+  }
+
+  /* Modal tampil sebagai panel bawah agar mudah dijangkau jempol */
+  .kegiatan-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .kegiatan-modal-panel {
+    max-height: 92vh;
+    border-radius: 14px 14px 0 0;
+    padding: 16px;
+  }
 }
 
 /* =========================================================
@@ -726,5 +765,49 @@ body {
 
   .dashboard-main {
     padding: 32px 20px 56px;
+  }
+}
+
+/* Pada HP, kartu ringkasan tetap dua kolom dan panel lain bertumpuk */
+@media (max-width: 640px) {
+  .dashboard-main {
+    padding: 20px 12px 40px;
+  }
+
+  .dashboard-grid:not(.dashboard-grid-dua) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dashboard-card {
+    padding: 14px;
+  }
+
+  .dashboard-card-angka {
+    font-size: 24px;
+  }
+
+  .dashboard-card-label {
+    font-size: 11px;
+  }
+
+  .dashboard-top,
+  .dashboard-item-label {
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-item {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-cepat {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-cepat .kegiatan-tombol-export {
+    width: 100%;
+    text-align: center;
   }
 }

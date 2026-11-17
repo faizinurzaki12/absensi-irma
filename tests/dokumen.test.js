@@ -229,6 +229,36 @@ test("setelah login pengguna diarahkan ke dashboard", () => {
   assert.equal(klien.includes('window.location.href = "/siswa"'), false);
 });
 
+test("navigasi halaman Tailwind bisa digeser di layar sempit", () => {
+  const css = bacaFile("assets/css/style.css");
+  const halaman = ["export.html", "siswa.html", "tambah.html", "rekap.html", "users.html"];
+
+  assert.equal(css.includes(".nav-scroll > a"), true);
+  assert.equal(css.includes(".nav-scroll > button"), true);
+
+  halaman.forEach((nama) => {
+    const html = bacaFile(nama);
+    assert.equal(html.includes("nav-scroll min-w-0 overflow-x-auto whitespace-nowrap"), true, nama + " belum punya navigasi geser");
+  });
+});
+
+test("CSS menata modal dan dashboard untuk layar HP", () => {
+  const css = bacaFile("assets/css/style.css");
+
+  assert.equal(css.includes("flex-wrap: nowrap"), true);
+  assert.equal(css.includes("align-items: flex-end"), true);
+  assert.equal(css.includes("border-radius: 14px 14px 0 0"), true);
+  assert.equal(css.includes(".dashboard-grid:not(.dashboard-grid-dua)"), true);
+  assert.equal(css.includes("repeat(2, minmax(0, 1fr))"), true);
+  assert.equal(css.includes("overflow-wrap: anywhere"), true);
+});
+
+test("teks rekap panjang tidak keluar dari kartu export", () => {
+  const html = bacaFile("export.html");
+  assert.equal(html.includes('id="top-siswa-xi" class="text-sm font-bold text-gray-800 break-words"'), true);
+  assert.equal(html.includes('id="top-siswa-x-periode" class="text-xs text-gray-500 mt-1 break-words"'), true);
+});
+
 test("file baru tidak memakai emoji atau ikon", () => {
   const daftar = [
     "dashboard.html",

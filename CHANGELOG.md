@@ -25,3 +25,12 @@
 - Perbaikan: tombol Kirim Kegiatan langsung dinonaktifkan dan menampilkan spinner serta teks "Tunggu bentar...." saat pengiriman.
 - Perbaikan: redirect setelah login diarahkan ke halaman dashboard.
 - Perbaikan: menambahkan 3 pengujian otomatis sehingga total menjadi 29 pengujian.
+
+## Versi 1.2.0 - 18 November 2026
+- Perbaikan: navigasi pada seluruh halaman petugas kini tampil dalam satu baris yang bisa digeser di layar handphone.
+- Perbaikan: modal detail kegiatan tampil sebagai panel bawah di handphone agar lebih mudah dijangkau.
+- Perbaikan: kartu ringkasan dashboard tetap dua kolom dan akses cepat ditata dua kolom pada layar sempit.
+- Perbaikan: status koneksi dan tombol export pada halaman kegiatan memakai lebar penuh di handphone.
+- Perbaikan: teks nama siswa pada kartu export tidak keluar dari kartu saat namanya panjang.
+- Perbaikan: tidak memasukkan Agent.md, TASKS.md, folder doks, dan folder sql ke dalam commit fitur ini.
+- Perbaikan: menambahkan 3 pengujian otomatis sehingga total menjadi 32 pengujian.
