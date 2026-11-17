@@ -26,7 +26,7 @@ Tampilannya dioptimalkan untuk handphone. Pada layar sempit, navigasi berubah me
 ### Dashboard
 - Ringkasan jumlah siswa, absensi, kehadiran, kegiatan, dan petugas.
 - Siswa paling rajin untuk jenjang **XI** dan **X** pada seluruh periode.
-- Aktivitas terbaru berupa nama siswa dan kelasnya, serta kegiatan yang baru dicatat.
+- Aktivitas terbaru berupa nama siswa dan kelasnya berikut status kehadirannya, serta kegiatan yang baru dicatat; tanggal ditampilkan ringkas tanpa cap waktu ISO.
 - Akses cepat menuju kelola siswa, input absensi, input kegiatan, dan export laporan.
 
 ### Data siswa dan absensi

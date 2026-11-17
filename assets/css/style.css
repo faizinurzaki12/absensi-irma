@@ -4,6 +4,15 @@ body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
+/* Semua elemen memakai border-box supaya padding dan border ikut
+   dihitung dalam width. Ini mencegah tombol selebar wadah (width: 100%)
+   melewati batas kartu, terutama pada kartu Akses Cepat dashboard. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* Scrollbar tipis warna hijau agar konsisten dengan tema */
 ::-webkit-scrollbar {
   width: 8px;
@@ -374,6 +383,18 @@ body {
   display: none;
 }
 
+/* Di laptop, rekap kegiatan memakai tabel. Aturan ini menegaskan
+   pilihan tampilan supaya tidak tertimpa gaya dari media lain. */
+@media (min-width: 641px) {
+  .kegiatan-tabel-wrap {
+    display: block;
+  }
+
+  .kegiatan-kartu-list {
+    display: none;
+  }
+}
+
 .kegiatan-item {
   border: 1px solid var(--hijau-garis);
   border-radius: 10px;
@@ -502,13 +523,22 @@ body {
     padding: 16px;
   }
 
-  /* Di HP, tabel disembunyikan dan diganti kartu */
+  /* Di HP, tabel disembunyikan dan seluruh rekap memakai kartu */
   .kegiatan-tabel-wrap {
     display: none;
   }
 
   .kegiatan-kartu-list {
     display: block;
+  }
+
+  .kegiatan-item-atas {
+    flex-wrap: wrap;
+  }
+
+  .kegiatan-item-judul,
+  .kegiatan-item-isi {
+    overflow-wrap: anywhere;
   }
 
   .kegiatan-tombol-kirim {
@@ -723,6 +753,8 @@ body {
 }
 
 .dashboard-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
   background: #ffffff;
   border: 1px solid var(--warna-garis);
   border-radius: 14px;
@@ -780,8 +812,31 @@ body {
 }
 
 .dashboard-item-waktu {
+  flex: 0 0 auto;
   color: var(--warna-abu);
+  text-align: right;
+  white-space: normal;
+}
+
+/* Status kehadiran pada aktivitas dashboard */
+.dashboard-item-status {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
   white-space: nowrap;
+}
+
+.dashboard-item-status.hadir {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.dashboard-item-status.tidak {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .dashboard-kosong {
@@ -799,6 +854,9 @@ body {
 }
 
 .dashboard-cepat .kegiatan-tombol-export {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: center;
   text-decoration: none;
 }
 
@@ -853,6 +911,7 @@ body {
 
   .dashboard-cepat .kegiatan-tombol-export {
     width: 100%;
+    padding: 8px 10px;
     text-align: center;
   }
 }

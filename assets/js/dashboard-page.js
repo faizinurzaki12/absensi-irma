@@ -43,9 +43,17 @@
 
     wadah.innerHTML = daftar
       .map(function (item) {
+        var penanda = "";
+        if (item.status) {
+          penanda =
+            '<span class="dashboard-item-status ' + (item.hadir ? "hadir" : "tidak") + '">' +
+            Laporan.escapeHtml(item.status) +
+            "</span>";
+        }
+
         return (
           '<div class="dashboard-item">' +
-          '<span class="dashboard-item-label">' + Laporan.escapeHtml(item.label) + "</span>" +
+          '<span class="dashboard-item-label">' + Laporan.escapeHtml(item.label) + penanda + "</span>" +
           '<span class="dashboard-item-waktu">' + Laporan.escapeHtml(item.tanggal || "-") + "</span>" +
           "</div>"
         );

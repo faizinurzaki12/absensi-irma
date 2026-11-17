@@ -56,3 +56,13 @@
 - Dokumentasi: menambahkan README proyek yang berisi judul, deskripsi, tujuan, fitur, teknologi yang dipakai, struktur proyek, daftar halaman, pengujian, dan catatan penting.
 - Dokumentasi: README menjelaskan alur kerja offline, fitur kegiatan, ekspor dokumen Proker, dan tab bar responsif sesuai kondisi aplikasi saat ini.
 - Perbaikan: menambahkan 1 pengujian otomatis sehingga total menjadi 37 pengujian.
+
+## Versi 1.6.0 - 18 November 2026
+- Perbaikan: kartu Akses Cepat di dashboard tidak lagi melewati batas karena semua elemen memakai `box-sizing: border-box`.
+- Perbaikan: audit layout mobile dan desktop—kartu diberi batas lebar minimum, teks panjang dibungkus, dan tombol akses cepat disesuaikan agar tidak ada elemen yang offset.
+- Perbaikan: rekap kegiatan di layar handphone hanya menampilkan kartu, sedangkan layar laptop tetap menampilkan tabel; aturan tampilan ditegaskan untuk kedua rentang layar.
+- Perbaikan: aktivitas dashboard tidak lagi menampilkan cap waktu ISO seperti `2026-11-09T12.0`; tanggal kini ringkas ("Hari ini" atau "9 November 2026").
+- Perbaikan: aktivitas absensi dashboard kini menampilkan status Hadir atau Tidak Hadir di samping nama siswa dan kelasnya.
+- Perbaikan: konversi tanggal ISO memakai timezone lokal Indonesia agar tidak bergeser sehari.
+- Dokumentasi: README diperbarui untuk mencantumkan status kehadiran pada aktivitas dashboard.
+- Perbaikan: menambahkan 5 pengujian otomatis sehingga total menjadi 42 pengujian.

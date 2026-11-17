@@ -74,6 +74,45 @@
     return NAMA_BULAN[index] + " " + bagian[0];
   }
 
+  /**
+   * Format tanggal ringkas untuk aktivitas dashboard. Tanggal hari ini
+   * ditampilkan sebagai "Hari ini" agar cap waktu ISO seperti
+   * "2026-11-09T12:34:56" tidak muncul di layar.
+   */
+  function formatTanggalRingkas(nilai) {
+    var sumber = teks(nilai);
+    if (!sumber) return "-";
+
+    var tahun;
+    var bulan;
+    var hari;
+
+    if (sumber.indexOf("T") !== -1) {
+      // Cap waktu ISO diubah ke tanggal lokal agar tidak bergeser sehari
+      // ketika disimpan dalam UTC (misalnya "2026-11-08T17:30:00Z").
+      var parsed = new Date(sumber);
+      if (isNaN(parsed.getTime())) return "-";
+      tahun = parsed.getFullYear();
+      bulan = parsed.getMonth();
+      hari = parsed.getDate();
+    } else {
+      var bagian = sumber.slice(0, 10).split("-");
+      if (bagian.length !== 3) return "-";
+      tahun = Number(bagian[0]);
+      bulan = Number(bagian[1]) - 1;
+      hari = Number(bagian[2]);
+    }
+
+    if (!tahun || bulan < 0 || bulan > 11 || !hari) return "-";
+
+    var sekarang = new Date();
+    var hariIni = Date.UTC(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate());
+    var tanggal = Date.UTC(tahun, bulan, hari);
+    if (tanggal === hariIni) return "Hari ini";
+
+    return hari + " " + NAMA_BULAN[bulan] + " " + tahun;
+  }
+
   /** Ambil daftar bulan yang ada pada data, atau bulan yang sedang difilter. */
   function daftarBulan(absensiList, siswaList, filterBulan) {
     if (filterBulan) return [{ kunci: filterBulan, label: labelBulan(filterBulan) }];
@@ -241,19 +280,30 @@
 
     var aktivitas = [];
     absensiLengkap.forEach(function (item) {
-      // Sesuai permintaan: aktivitas absensi cukup menampilkan nama dan kelas.
+      var hadir = item.status_kehadiran.toLowerCase() === "hadir";
+      var waktu = teks(item.created_at || item.tanggal_kegiatan);
+
+      // Nama dan kelas tetap jadi label; status kehadiran dipisah agar
+      // mudah ditampilkan sebagai penanda di dashboard.
       aktivitas.push({
-        tanggal: teks(item.created_at || item.tanggal_kegiatan),
+        waktu: waktu,
+        tanggal: formatTanggalRingkas(waktu),
         label: item.nama_siswa + " (" + item.kelas + ")",
+        status: hadir ? "Hadir" : "Tidak Hadir",
+        hadir: hadir,
       });
     });
     kegiatan.forEach(function (item) {
+      var waktu = teks(item.created_at || item.tanggal_kegiatan);
       aktivitas.push({
-        tanggal: teks(item.created_at || item.tanggal_kegiatan),
+        waktu: waktu,
+        tanggal: formatTanggalRingkas(waktu),
         label: "Kegiatan " + teks(item.judul_kumpulan),
+        status: "",
+        hadir: null,
       });
     });
-    aktivitas.sort(function (a, b) { return b.tanggal.localeCompare(a.tanggal); });
+    aktivitas.sort(function (a, b) { return b.waktu.localeCompare(a.waktu); });
 
     return {
       totalSiswa: siswa.length,
@@ -273,6 +323,7 @@
     gabungkanAbsensiSiswa: gabungkanAbsensiSiswa,
     cocokBulan: cocokBulan,
     labelBulan: labelBulan,
+    formatTanggalRingkas: formatTanggalRingkas,
     daftarBulan: daftarBulan,
     hitungTerajin: hitungTerajin,
     bangunBarisExcelKehadiran: bangunBarisExcelKehadiran,

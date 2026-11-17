@@ -166,6 +166,68 @@ test("aktivitas absensi di dashboard hanya berisi nama dan kelas siswa", () => {
   assert.equal(label.some((item) => item.includes("pada 2026-")), false);
 });
 
+test("aktivitas absensi menampilkan status dan tanggal tanpa cap waktu ISO", () => {
+  const hasil = Laporan.ringkasanSistem({
+    siswa: [
+      { id: 1, nama_siswa: "Budi", kelas: "XI RPL 1" },
+      { id: 2, nama_siswa: "Siti", kelas: "X PPLG 1" },
+    ],
+    absensi: [
+      { siswa_id: 1, status_kehadiran: "Hadir", created_at: "2026-11-09T12:34:56Z" },
+      { siswa_id: 2, status_kehadiran: "Sakit", created_at: "2026-11-08T07:00:00Z" },
+    ],
+    kegiatan: [{ judul_kumpulan: "Raker", created_at: "2026-11-10T00:00:00Z" }],
+  });
+
+  const absen = hasil.aktivitasTerbaru.filter((item) => item.status);
+  assert.equal(absen.length, 2);
+
+  const budi = absen.find((item) => item.label === "Budi (XI RPL 1)");
+  assert.equal(budi.status, "Hadir");
+  assert.equal(budi.hadir, true);
+  assert.equal(budi.tanggal, "9 November 2026");
+  assert.equal(budi.tanggal.includes("T"), false);
+
+  const siti = absen.find((item) => item.label === "Siti (X PPLG 1)");
+  assert.equal(siti.status, "Tidak Hadir");
+  assert.equal(siti.hadir, false);
+  assert.equal(siti.tanggal.includes("T"), false);
+
+  const kegiatan = hasil.aktivitasTerbaru.find((item) => item.label.includes("Raker"));
+  assert.equal(kegiatan.status, "");
+  assert.equal(kegiatan.tanggal, "10 November 2026");
+});
+
+test("tanggal aktivitas hari ini ditampilkan sebagai Hari ini", () => {
+  const sekarang = new Date();
+  const kunci = [
+    sekarang.getFullYear(),
+    String(sekarang.getMonth() + 1).padStart(2, "0"),
+    String(sekarang.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  assert.equal(Laporan.formatTanggalRingkas(kunci + "T12:34:56Z"), "Hari ini");
+  assert.equal(Laporan.formatTanggalRingkas("2026-11-09T12:34:56Z"), "9 November 2026");
+  assert.equal(Laporan.formatTanggalRingkas("-"), "-");
+});
+
+test("konversi tanggal ISO aman untuk timezone Indonesia", () => {
+  const { execFileSync } = require("node:child_process");
+  const berkasLogika = path.join(akarProject, "assets/js/laporan-logic.js");
+  const skrip =
+    "var L=require(" + JSON.stringify(berkasLogika) + ");" +
+    "process.stdout.write(L.formatTanggalRingkas('2026-11-08T17:30:00Z'));";
+
+  const hasil = execFileSync(process.execPath, ["-e", skrip], {
+    cwd: akarProject,
+    env: { ...process.env, TZ: "Asia/Jakarta" },
+    encoding: "utf8",
+  });
+
+  // 17:30 UTC = 00:30 hari berikutnya di Indonesia.
+  assert.equal(hasil, "9 November 2026");
+});
+
 // ---------- STRUKTUR ANTARMUKA ----------
 
 test("halaman kegiatan memiliki aksi lihat, edit, hapus, dan modal", () => {
@@ -252,6 +314,28 @@ test("CSS menata modal dan dashboard untuk layar HP", () => {
   assert.equal(css.includes(".dashboard-grid:not(.dashboard-grid-dua)"), true);
   assert.equal(css.includes("repeat(2, minmax(0, 1fr))"), true);
   assert.equal(css.includes("overflow-wrap: anywhere"), true);
+});
+
+test("tampilan aktivitas dashboard memakai penanda status kehadiran", () => {
+  const js = bacaFile("assets/js/dashboard-page.js");
+
+  assert.equal(js.includes("dashboard-item-status"), true);
+  assert.equal(js.includes("item.status"), true);
+  assert.equal(js.includes("item.tanggal"), true);
+});
+
+test("layout tidak offset dan rekap kegiatan memakai kartu di HP", () => {
+  const css = bacaFile("assets/css/style.css");
+
+  assert.equal(css.includes("box-sizing: border-box"), true);
+  assert.equal(css.includes(".dashboard-card {\n  min-width: 0;"), true);
+  assert.equal(css.includes(".dashboard-cepat .kegiatan-tombol-export {\n  min-width: 0;"), true);
+  assert.equal(css.includes("@media (min-width: 641px)"), true);
+  assert.equal(css.includes(".kegiatan-item-atas {\n    flex-wrap: wrap;"), true);
+
+  const kegiatan = bacaFile("kegiatan.html");
+  assert.equal(kegiatan.includes('class="kegiatan-tabel-wrap"'), true);
+  assert.equal(kegiatan.includes('id="kartu-kegiatan" class="kegiatan-kartu-list"'), true);
 });
 
 test("teks rekap panjang tidak keluar dari kartu export", () => {
