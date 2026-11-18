@@ -118,10 +118,13 @@ test("dokumen Proker memakai struktur awal dari contoh PROKER IRMA 2024", () => 
 
   ["PROGRAM KERJA EKSTRAKURIKULER IRMA", "Pendahuluan", "Tujuan", "Sasaran",
     "Indikator Keberhasilan", "BAB II PERENCANAAN", "Rencana Kegiatan",
-    "Rencana Anggaran", "BAB III PENUTUP", "November 2026", "Pengajian Bulanan"
+    "Rencana Anggaran", "BAB III PENUTUP", "November 2026", "Pengajian Bulanan",
+    "17 November 2026"
   ].forEach((bagian) => {
     assert.equal(html.includes(bagian), true, bagian + " tidak ada di dokumen");
   });
+
+  assert.equal(html.includes("2026-11-17"), false);
 });
 
 test("dokumen Proker aman dari injeksi HTML", () => {
@@ -227,6 +230,38 @@ test("konversi tanggal ISO aman untuk timezone Indonesia", () => {
 
   // 17:30 UTC = 00:30 hari berikutnya di Indonesia.
   assert.equal(hasil, "9 November 2026");
+});
+
+// ---------- FORMAT TANGGAL ----------
+
+test("formatTanggalIndonesia selalu memakai urutan tanggal bulan tahun", () => {
+  assert.equal(Laporan.formatTanggalIndonesia("2026-11-17"), "17 November 2026");
+  assert.equal(Laporan.formatTanggalIndonesia("2026-01-05"), "5 Januari 2026");
+  assert.equal(Laporan.formatTanggalIndonesia("2026-11-17T00:00:00Z"), "17 November 2026");
+  assert.equal(Laporan.formatTanggalIndonesia(""), "-");
+  assert.equal(Laporan.formatTanggalIndonesia("tidak valid"), "-");
+});
+
+test("formatTanggalRingkas tetap memakai Hari ini hanya untuk hari ini", () => {
+  const sekarang = new Date();
+  const kunci = [
+    sekarang.getFullYear(),
+    String(sekarang.getMonth() + 1).padStart(2, "0"),
+    String(sekarang.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  assert.equal(Laporan.formatTanggalRingkas(kunci), "Hari ini");
+  assert.equal(Laporan.formatTanggalRingkas("2026-11-09"), "9 November 2026");
+  assert.equal(Laporan.formatTanggalRingkas(""), "-");
+});
+
+test("tabel rekap dan export Excel menampilkan tanggal Indonesia", () => {
+  const rekap = bacaFile("rekap.html");
+  const app = bacaFile("assets/js/app.js");
+
+  assert.equal(rekap.includes("formatTanggalIndonesiaRekap(a.tanggal_kegiatan)"), true);
+  assert.equal(rekap.includes('class="px-4 py-3">${a.tanggal_kegiatan}'), false);
+  assert.equal(app.includes("Tanggal: formatTanggalIndonesiaRekap(item.tanggal_kegiatan) || \"-\""), true);
 });
 
 // ---------- PENCARIAN REKAP ----------

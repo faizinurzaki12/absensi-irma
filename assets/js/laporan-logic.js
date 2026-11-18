@@ -75,42 +75,62 @@
   }
 
   /**
-   * Format tanggal ringkas untuk aktivitas dashboard. Tanggal hari ini
-   * ditampilkan sebagai "Hari ini" agar cap waktu ISO seperti
-   * "2026-11-09T12:34:56" tidak muncul di layar.
+   * Urai tanggal mentah menjadi tahun, bulan (0-11), dan hari.
+   * Cap waktu ISO dikonversi ke tanggal lokal agar tidak bergeser sehari
+   * ketika disimpan dalam UTC (misalnya "2026-11-08T17:30:00Z").
    */
-  function formatTanggalRingkas(nilai) {
+  function pecahTanggal(nilai) {
     var sumber = teks(nilai);
-    if (!sumber) return "-";
+    if (!sumber) return null;
 
     var tahun;
     var bulan;
     var hari;
 
     if (sumber.indexOf("T") !== -1) {
-      // Cap waktu ISO diubah ke tanggal lokal agar tidak bergeser sehari
-      // ketika disimpan dalam UTC (misalnya "2026-11-08T17:30:00Z").
       var parsed = new Date(sumber);
-      if (isNaN(parsed.getTime())) return "-";
+      if (isNaN(parsed.getTime())) return null;
       tahun = parsed.getFullYear();
       bulan = parsed.getMonth();
       hari = parsed.getDate();
     } else {
       var bagian = sumber.slice(0, 10).split("-");
-      if (bagian.length !== 3) return "-";
+      if (bagian.length !== 3) return null;
       tahun = Number(bagian[0]);
       bulan = Number(bagian[1]) - 1;
       hari = Number(bagian[2]);
     }
 
-    if (!tahun || bulan < 0 || bulan > 11 || !hari) return "-";
+    if (!tahun || bulan < 0 || bulan > 11 || !hari) return null;
+    return { tahun: tahun, bulan: bulan, hari: hari };
+  }
+
+  /** Susun teks tanggal lengkap, misalnya "17 November 2026". */
+  function susunTanggal(bagian) {
+    return bagian.hari + " " + NAMA_BULAN[bagian.bulan] + " " + bagian.tahun;
+  }
+
+  /** Format tanggal Indonesia untuk seluruh tampilan, tabel, dan dokumen. */
+  function formatTanggalIndonesia(nilai) {
+    var bagian = pecahTanggal(nilai);
+    return bagian ? susunTanggal(bagian) : "-";
+  }
+
+  /**
+   * Format tanggal ringkas untuk aktivitas dashboard. Tanggal hari ini
+   * ditampilkan sebagai "Hari ini" agar cap waktu ISO seperti
+   * "2026-11-09T12:34:56" tidak muncul di layar.
+   */
+  function formatTanggalRingkas(nilai) {
+    var bagian = pecahTanggal(nilai);
+    if (!bagian) return "-";
 
     var sekarang = new Date();
     var hariIni = Date.UTC(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate());
-    var tanggal = Date.UTC(tahun, bulan, hari);
+    var tanggal = Date.UTC(bagian.tahun, bagian.bulan, bagian.hari);
     if (tanggal === hariIni) return "Hari ini";
 
-    return hari + " " + NAMA_BULAN[bulan] + " " + tahun;
+    return susunTanggal(bagian);
   }
 
   /** Ambil daftar bulan yang ada pada data, atau bulan yang sedang difilter. */
@@ -215,7 +235,7 @@
           "<tr>" +
           "<td>" + (index + 1) + "</td>" +
           "<td>" + escapeHtml(item.judul_kumpulan) + "</td>" +
-          "<td>" + escapeHtml(item.tanggal_kegiatan) + "</td>" +
+          "<td>" + formatTanggalIndonesia(item.tanggal_kegiatan) + "</td>" +
           "<td>" + escapeHtml(item.isi_kegiatan).replace(/\n/g, "<br />") + "</td>" +
           "</tr>"
         );
@@ -323,6 +343,7 @@
     gabungkanAbsensiSiswa: gabungkanAbsensiSiswa,
     cocokBulan: cocokBulan,
     labelBulan: labelBulan,
+    formatTanggalIndonesia: formatTanggalIndonesia,
     formatTanggalRingkas: formatTanggalRingkas,
     daftarBulan: daftarBulan,
     hitungTerajin: hitungTerajin,

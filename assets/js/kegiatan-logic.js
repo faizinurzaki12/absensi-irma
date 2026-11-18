@@ -110,14 +110,27 @@
     return kunci.length > 0 ? errors[kunci[0]] : "";
   }
 
-  /** Ubah "2026-11-17" menjadi "17 November 2026". */
+  /** Ubah "2026-11-17" atau cap waktu ISO menjadi "17 November 2026". */
   function formatTanggalIndonesia(nilai) {
-    var tanggal = bersihkanTeks(nilai);
-    if (!tanggalValid(tanggal)) return "-";
+    var sumber = bersihkanTeks(nilai);
+    if (!sumber) return "-";
 
-    var bagian = tanggal.split("-");
-    var bulan = Number(bagian[1]) - 1;
-    return Number(bagian[2]) + " " + NAMA_BULAN[bulan] + " " + bagian[0];
+    var tanggal = sumber;
+    if (sumber.indexOf("T") !== -1) {
+      var parsed = new Date(sumber);
+      if (isNaN(parsed.getTime())) return "-";
+      tanggal = [
+        parsed.getFullYear(),
+        String(parsed.getMonth() + 1).padStart(2, "0"),
+        String(parsed.getDate()).padStart(2, "0"),
+      ].join("-");
+    }
+
+    var bagian = tanggal.slice(0, 10).split("-");
+    if (bagian.length !== 3) return "-";
+    var index = Number(bagian[1]) - 1;
+    if (!bagian[0] || index < 0 || index > 11 || !bagian[2]) return "-";
+    return Number(bagian[2]) + " " + NAMA_BULAN[index] + " " + bagian[0];
   }
 
   /** Potong isi panjang agar tabel tetap rapi. */

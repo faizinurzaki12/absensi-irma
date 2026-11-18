@@ -82,3 +82,11 @@
 - Perbaikan: kolom pencarian ditata fleksibel berdampingan dengan label dan keterangan di laptop, serta bertumpuk penuh lebar di handphone tanpa membuat elemen offset.
 - Dokumentasi: README diperbarui untuk mencantumkan fitur pencarian rekap dan kegiatan.
 - Perbaikan: menambahkan 8 pengujian otomatis sehingga total menjadi 52 pengujian.
+
+## Versi 1.9.0 - 18 November 2026
+- Perbaikan: semua tanggal yang tampil di aplikasi kini memakai urutan tanggal-bulan-tahun bahasa Indonesia, misalnya `17 November 2026`, termasuk tabel Rekap Absensi, dokumen Proker, dan export Excel.
+- Perbaikan: tanggal mentah `2026-11-17` dan cap waktu ISO sudah tidak ditampilkan lagi pada rekap, kegiatan, dashboard, maupun hasil unduhan.
+- Perbaikan: format tanggal kini menerima baik tanggal mentah maupun cap waktu ISO dan dikonversi ke timezone lokal Indonesia agar tidak bergeser sehari.
+- Perbaikan: lebar kolom Tanggal pada export Excel disesuaikan dengan teks tanggal Indonesia.
+- Dokumentasi: README diperbarui untuk mencantumkan format tanggal yang seragam.
+- Perbaikan: menambahkan 3 pengujian otomatis sehingga total menjadi 55 pengujian.

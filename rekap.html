@@ -172,7 +172,7 @@
           .map(
             (a) => `
       <tr>
-        <td class="px-4 py-3">${a.tanggal_kegiatan}</td>
+        <td class="px-4 py-3 rekap-tanggal">${formatTanggalIndonesiaRekap(a.tanggal_kegiatan) || "-"}</td>
         <td class="px-4 py-3">${escapeHtml(a.tabel_siswa?.nama_siswa || "-")}${a._pending ? ' <span class="text-xs text-amber-600">(belum sinkron)</span>' : ""}</td>
         <td class="px-4 py-3">${escapeHtml(a.tabel_siswa?.kelas || "-")}</td>
         <td class="px-4 py-3"><span class="rekap-status px-2.5 py-1 rounded-full text-xs font-semibold ${warnaStatus[a.status_kehadiran] || ""}">${a.status_kehadiran}</span></td>

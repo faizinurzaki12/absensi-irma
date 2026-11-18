@@ -77,7 +77,9 @@ test("validasi membatasi panjang judul dan isi", () => {
 test("format tanggal memakai bahasa Indonesia", () => {
   assert.equal(Logic.formatTanggalIndonesia("2026-11-17"), "17 November 2026");
   assert.equal(Logic.formatTanggalIndonesia("2026-01-05"), "5 Januari 2026");
+  assert.equal(Logic.formatTanggalIndonesia("2026-11-17T00:00:00Z"), "17 November 2026");
   assert.equal(Logic.formatTanggalIndonesia(""), "-");
+  assert.equal(Logic.formatTanggalIndonesia("17/11/2026"), "-");
 });
 
 test("escapeHtml mencegah skrip ikut terbaca sebagai HTML", () => {

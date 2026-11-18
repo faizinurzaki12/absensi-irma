@@ -57,6 +57,7 @@ Tampilannya dioptimalkan untuk handphone. Pada layar sempit, navigasi berubah me
 - Indikator status jaringan dan jumlah perubahan yang masih menunggu disinkronkan.
 
 ### Tampilan
+- Semua tanggal memakai urutan tanggal-bulan-tahun dalam bahasa Indonesia, misalnya `17 November 2026`; tanggal mentah `2026-11-17` dan cap waktu ISO tidak ditampilkan.
 - Responsif di layar handphone; teks panjang dibungkus dan lebar elemen dibatasi agar tidak keluar layar.
 - Tab bar bawah berisi **Dashboard**, **Siswa**, **Kegiatan**, **Export**, dan tombol **Lainnya** (Akun, Input Absensi, Rekap, Logout).
 - Dropdown **Lainnya** muncul ke atas, ditutup dengan klik di luar atau tombol `Escape`, dan tinggi tab bar ditambah agar mudah disentuh.

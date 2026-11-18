@@ -106,7 +106,7 @@ function tampilkanNotifikasiSync(pesan) {
 function unduhExcel(namaFile, dataAbsensi) {
   const formattedData = dataAbsensi.map((item, index) => ({
     No: index + 1,
-    Tanggal: item.tanggal_kegiatan || "-",
+    Tanggal: formatTanggalIndonesiaRekap(item.tanggal_kegiatan) || "-",
     "Nama Siswa": item.tabel_siswa?.nama_siswa || "-",
     Kelas: item.tabel_siswa?.kelas || "-",
     "Status Kehadiran": item.status_kehadiran || "-",
@@ -118,7 +118,7 @@ function unduhExcel(namaFile, dataAbsensi) {
 
   worksheet["!cols"] = [
     { wch: 6 }, // No
-    { wch: 15 }, // Tanggal
+    { wch: 20 }, // Tanggal (17 November 2026)
     { wch: 25 }, // Nama Siswa
     { wch: 12 }, // Kelas
     { wch: 18 }, // Status Kehadiran
