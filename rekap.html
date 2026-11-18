@@ -61,17 +61,11 @@
         </div>
       </div>
 
-      <!-- LIST / TABEL REKAP -->
-      <div class="bg-white rounded-2xl shadow border border-gray-100 p-4 sm:p-0 overflow-hidden">
-        
-        <!-- MOBILE VIEW (CARD) -->
-        <div id="card-tabel-rekap" class="block sm:hidden space-y-3">
-          <p class="text-center py-6 text-gray-400">Memuat data...</p>
-        </div>
-
-        <!-- DESKTOP VIEW (TABLE) -->
-        <div class="hidden sm:block overflow-x-auto">
-          <table class="w-full text-sm">
+      <!-- TABEL REKAP: dipakai di laptop maupun handphone.
+           Di handphone tabelnya diperkecil agar semua kolom tetap terlihat. -->
+      <div class="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="rekap-tabel w-full text-sm">
             <thead class="bg-emerald-50 text-emerald-800">
               <tr>
                 <th class="text-left px-4 py-3 font-semibold">Tanggal</th>
@@ -88,7 +82,6 @@
             </tbody>
           </table>
         </div>
-
       </div>
     </main>
 
@@ -125,8 +118,7 @@
 
       async function muatRekap() {
         const tbody = document.getElementById("tabel-body");
-        const cardContainer = document.getElementById("card-tabel-rekap");
-        
+
         const [absensi, siswa] = await Promise.all([dbSelect("tabel_absensi"), dbSelect("tabel_siswa")]);
 
         const petaSiswa = {};
@@ -138,11 +130,10 @@
 
         if (!data || data.length === 0) {
           tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">Belum ada data absensi.</td></tr>`;
-          cardContainer.innerHTML = `<p class="text-center py-6 text-gray-400">Belum ada data absensi.</p>`;
           return;
         }
 
-        // Render Desktop Table
+        // Satu tabel yang sama dipakai di semua ukuran layar.
         tbody.innerHTML = data
           .map(
             (a) => `
@@ -150,36 +141,12 @@
         <td class="px-4 py-3">${a.tanggal_kegiatan}</td>
         <td class="px-4 py-3">${escapeHtml(a.tabel_siswa?.nama_siswa || "-")}${a._pending ? ' <span class="text-xs text-amber-600">(belum sinkron)</span>' : ""}</td>
         <td class="px-4 py-3">${escapeHtml(a.tabel_siswa?.kelas || "-")}</td>
-        <td class="px-4 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${warnaStatus[a.status_kehadiran] || ""}">${a.status_kehadiran}</span></td>
-        <td class="px-4 py-3 text-right space-x-2">
+        <td class="px-4 py-3"><span class="rekap-status px-2.5 py-1 rounded-full text-xs font-semibold ${warnaStatus[a.status_kehadiran] || ""}">${a.status_kehadiran}</span></td>
+        <td class="rekap-aksi px-4 py-3 text-right space-x-2">
           <button onclick='bukaModal(${JSON.stringify({ id: a.id, tanggal_kegiatan: a.tanggal_kegiatan, status_kehadiran: a.status_kehadiran })})' class="text-emerald-700 font-semibold hover:underline">Edit</button>
           <button onclick="hapusAbsensi('${a.id}')" class="text-red-600 font-semibold hover:underline">Hapus</button>
         </td>
       </tr>
-    `,
-          )
-          .join("");
-
-        // Render Mobile Cards
-        cardContainer.innerHTML = data
-          .map(
-            (a) => `
-      <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl space-y-2">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="font-bold text-gray-800 text-sm">${escapeHtml(a.tabel_siswa?.nama_siswa || "-")} ${a._pending ? '<span class="text-xs text-amber-600">(pending)</span>' : ""}</p>
-            <p class="text-xs text-gray-500">Kelas: ${escapeHtml(a.tabel_siswa?.kelas || "-")}</p>
-          </div>
-          <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${warnaStatus[a.status_kehadiran] || ""}">${a.status_kehadiran}</span>
-        </div>
-        <div class="flex justify-between items-center pt-2 border-t border-gray-200/60 text-xs">
-          <span class="text-gray-500">📅 ${a.tanggal_kegiatan}</span>
-          <div class="space-x-3 font-semibold">
-            <button onclick='bukaModal(${JSON.stringify({ id: a.id, tanggal_kegiatan: a.tanggal_kegiatan, status_kehadiran: a.status_kehadiran })})' class="text-emerald-700">Edit</button>
-            <button onclick="hapusAbsensi('${a.id}')" class="text-red-600">Hapus</button>
-          </div>
-        </div>
-      </div>
     `,
           )
           .join("");

@@ -917,6 +917,44 @@ body {
 }
 
 /* =========================================================
+   TABEL REKAP ABSENSI (SEMUA UKURAN LAYAR)
+   Tabel tetap dipakai di handphone, hanya diperkecil supaya
+   kelima kolomnya masih bisa dibaca tanpa menyembunyikan data.
+   ========================================================= */
+.rekap-tabel {
+  width: 100%;
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .rekap-tabel {
+    font-size: 11px;
+  }
+
+  .rekap-tabel th,
+  .rekap-tabel td {
+    padding: 6px 4px;
+    line-height: 1.25;
+  }
+
+  .rekap-tabel th,
+  .rekap-tabel .rekap-status,
+  .rekap-tabel .rekap-aksi {
+    white-space: nowrap;
+  }
+
+  .rekap-status {
+    display: inline-block;
+    padding: 2px 5px;
+    font-size: 10px;
+  }
+
+  .rekap-tabel button {
+    font-size: 11px;
+  }
+}
+
+/* =========================================================
    TAB BAR BAWAH UNTUK HALAMAN BERBASIS TAILWIND
    Dipakai pada halaman siswa, tambah, rekap, users, dan export.
    ========================================================= */

@@ -428,6 +428,36 @@ test("semua elemen dibuat responsif untuk tampilan HP", () => {
   assert.match(css, /input,\s*textarea,\s*select\s*\{[^}]*max-width:\s*100%/);
 });
 
+test("modal hapus kegiatan menyediakan export dokumen untuk seluruh rekap", () => {
+  const html = bacaFile("kegiatan.html");
+  const js = bacaFile("assets/js/kegiatan-page.js");
+
+  assert.equal(html.includes('id="modal-hapus"'), true);
+  assert.equal(html.includes('id="hapus-judul"'), true);
+  assert.equal(html.includes('id="tombol-export-dokumen-hapus"'), true);
+  assert.equal(html.includes('id="tombol-konfirmasi-hapus"'), true);
+  assert.equal(html.includes('id="tombol-unduh-doc" class="kegiatan-tombol-export sekunder">Export Dokumen'), true);
+
+  assert.equal(js.includes("modal-hapus"), true);
+  assert.equal(js.includes("tombol-export-dokumen-hapus"), true);
+  assert.equal(js.includes("unduhDokumenDoc"), true);
+  assert.equal(js.includes("window.confirm"), false);
+});
+
+test("halaman rekap memakai satu tabel responsif di semua layar", () => {
+  const html = bacaFile("rekap.html");
+  const css = bacaFile("assets/css/style.css");
+
+  assert.equal(html.includes('class="rekap-tabel w-full text-sm"'), true);
+  assert.equal(html.includes("card-tabel-rekap"), false);
+  assert.equal(html.includes('class="hidden sm:block overflow-x-auto"'), false);
+  assert.equal(html.includes("rekap-status"), true);
+
+  assert.equal(css.includes(".rekap-tabel {"), true);
+  assert.equal(css.includes(".rekap-tabel th,\n  .rekap-tabel td {"), true);
+  assert.equal(css.includes("padding: 6px 4px;"), true);
+});
+
 test("README menjelaskan proyek beserta bagian yang diminta", () => {
   const readme = bacaFile("README.md");
 

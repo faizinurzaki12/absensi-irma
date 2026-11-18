@@ -32,12 +32,12 @@ Tampilannya dioptimalkan untuk handphone. Pada layar sempit, navigasi berubah me
 ### Data siswa dan absensi
 - Manajemen data siswa: tambah, ubah, dan hapus.
 - Input absensi harian beserta status kehadiran.
-- Rekap absensi yang tampil sebagai tabel di laptop dan kartu di handphone.
+- Rekap absensi yang tetap memakai tabel di laptop maupun handphone; di handphone tabel diperkecil agar semua kolom tetap terlihat.
 
 ### Kegiatan kumpulan IRMA
 - Input kegiatan berisi judul kumpulan, tanggal kegiatan, dan isi kegiatan.
 - Daftar kegiatan diurutkan dari tanggal terbaru, tampil sebagai tabel di laptop dan kartu di handphone.
-- Aksi **Lihat**, **Edit**, dan **Hapus** melalui modal, dengan konfirmasi sebelum menghapus.
+- Aksi **Lihat**, **Edit**, dan **Hapus** melalui modal; modal hapus juga menyediakan tombol **Export Dokumen** untuk seluruh rekap kegiatan.
 - Ekspor rekap ke dokumen `.doc` yang kompatibel dengan Microsoft Word maupun Google Dokumen.
 - Salin format ke Google Dokumen langsung dari aplikasi.
 - Format dokumen mengikuti struktur awal **PROKER IRMA 2024**: pendahuluan, tujuan, sasaran, indikator keberhasilan, BAB II perencanaan berisi tabel rekap kegiatan per bulan, dan BAB III penutup.

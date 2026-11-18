@@ -18,6 +18,9 @@
   // Salinan data terakhir dipakai modal lihat/edit tanpa menaruh JSON di atribut HTML.
   var daftarKegiatanCache = [];
 
+  // Id kegiatan yang sedang menunggu konfirmasi pada modal hapus.
+  var idHapusTertunda = null;
+
   /** Ambil elemen berdasarkan id. */
   function elemen(id) {
     return document.getElementById(id);
@@ -260,7 +263,9 @@
 
       var tombolTutup = target.closest("[data-tutup-modal]");
       if (tombolTutup) {
-        tutupModal(tombolTutup.getAttribute("data-tutup-modal"));
+        var idModalDitutup = tombolTutup.getAttribute("data-tutup-modal");
+        if (idModalDitutup === "modal-hapus") idHapusTertunda = null;
+        tutupModal(idModalDitutup);
         return;
       }
 
@@ -278,9 +283,22 @@
 
       var tombolHapus = target.closest("[data-hapus-kegiatan]");
       if (!tombolHapus) return;
-      if (!window.confirm("Hapus kegiatan ini?")) return;
 
-      await dbDelete("tabel_kegiatan", tombolHapus.getAttribute("data-hapus-kegiatan"));
+      var itemHapus = cariKegiatan(tombolHapus.getAttribute("data-hapus-kegiatan"));
+      if (!itemHapus) return;
+
+      idHapusTertunda = itemHapus.id;
+      elemen("hapus-judul").textContent = itemHapus.judul_kumpulan || "-";
+      bukaModal("modal-hapus");
+    });
+
+    // Konfirmasi hapus memakai modal, bukan konfirmasi bawaan browser.
+    elemen("tombol-konfirmasi-hapus").addEventListener("click", async function () {
+      if (!idHapusTertunda) return;
+
+      await dbDelete("tabel_kegiatan", idHapusTertunda);
+      idHapusTertunda = null;
+      tutupModal("modal-hapus");
       tampilkanPesan("Kegiatan dihapus.");
       perbaruiInfoAntrean();
       await muatDaftarKegiatan();
@@ -312,6 +330,7 @@
     elemen("tombol-export-dokumen").addEventListener("click", unduhDokumenDoc);
     elemen("tombol-google-docs").addEventListener("click", exportKeGoogleDokumen);
     elemen("tombol-unduh-doc").addEventListener("click", unduhDokumenDoc);
+    elemen("tombol-export-dokumen-hapus").addEventListener("click", unduhDokumenDoc);
 
     window.addEventListener("online", perbaruiStatusJaringan);
     window.addEventListener("offline", perbaruiStatusJaringan);

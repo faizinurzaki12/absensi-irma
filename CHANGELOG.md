@@ -66,3 +66,10 @@
 - Perbaikan: konversi tanggal ISO memakai timezone lokal Indonesia agar tidak bergeser sehari.
 - Dokumentasi: README diperbarui untuk mencantumkan status kehadiran pada aktivitas dashboard.
 - Perbaikan: menambahkan 5 pengujian otomatis sehingga total menjadi 42 pengujian.
+
+## Versi 1.7.0 - 18 November 2026
+- Perbaikan: tombol "Unduh Dokumen .doc" pada modal kegiatan diganti menjadi "Export Dokumen" untuk seluruh rekapan kegiatan.
+- Perbaikan: aksi Hapus kegiatan kini memakai modal konfirmasi, lengkap dengan tombol Export Dokumen untuk seluruh rekap sebelum penghapusan.
+- Perbaikan: halaman Rekap Absensi sekarang memakai satu tabel di semua layar; tampilan mobile diperkecil agar seluruh kolom tetap terlihat tanpa kartu terpisah.
+- Dokumentasi: README diperbarui untuk mencantumkan modal hapus dan tabel rekap responsif.
+- Perbaikan: menambahkan 2 pengujian otomatis sehingga total menjadi 44 pengujian.

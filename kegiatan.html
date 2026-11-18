@@ -130,7 +130,7 @@
         <p id="detail-isi" class="kegiatan-detail-isi"></p>
         <div class="kegiatan-modal-aksi">
           <button type="button" id="tombol-google-docs" class="kegiatan-tombol-export">Export ke Google Dokumen</button>
-          <button type="button" id="tombol-unduh-doc" class="kegiatan-tombol-export sekunder">Unduh Dokumen .doc</button>
+          <button type="button" id="tombol-unduh-doc" class="kegiatan-tombol-export sekunder">Export Dokumen</button>
         </div>
       </div>
     </div>
@@ -158,6 +158,23 @@
           </div>
           <button type="submit" class="kegiatan-tombol-kirim">Simpan Perubahan</button>
         </form>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI HAPUS KEGIATAN -->
+    <div id="modal-hapus" class="kegiatan-modal" hidden>
+      <div class="kegiatan-modal-panel">
+        <div class="kegiatan-modal-header">
+          <h2>Hapus Kegiatan</h2>
+          <button type="button" class="kegiatan-modal-tutup" data-tutup-modal="modal-hapus">Tutup</button>
+        </div>
+        <p class="kegiatan-detail-label">Kegiatan yang akan dihapus</p>
+        <p id="hapus-judul" class="kegiatan-detail-nilai"></p>
+        <p class="kegiatan-subjudul">Ekspor seluruh rekap kegiatan terlebih dahulu bila diperlukan.</p>
+        <div class="kegiatan-modal-aksi">
+          <button type="button" id="tombol-export-dokumen-hapus" class="kegiatan-tombol-export">Export Dokumen</button>
+          <button type="button" id="tombol-konfirmasi-hapus" class="kegiatan-tombol-export sekunder">Hapus Kegiatan</button>
+        </div>
       </div>
     </div>
 
