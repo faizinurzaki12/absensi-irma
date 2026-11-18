@@ -144,6 +144,32 @@
     });
   }
 
+  /**
+   * Cari kegiatan berdasarkan judul, tanggal (mentah maupun format
+   * Indonesia), dan isi kegiatan. Beberapa kata kunci harus semuanya
+   * cocok, sehingga pencarian terasa lebih presisi.
+   */
+  function cariKegiatan(daftar, kataKunci) {
+    var kunci = bersihkanTeks(kataKunci).toLowerCase();
+    if (!kunci) return urutanKegiatan(daftar);
+
+    var kata = kunci.split(/\s+/);
+    return urutanKegiatan(daftar).filter(function (item) {
+      var gabungan = [
+        item.judul_kumpulan,
+        item.tanggal_kegiatan,
+        formatTanggalIndonesia(item.tanggal_kegiatan),
+        item.isi_kegiatan,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return kata.every(function (bagian) {
+        return gabungan.indexOf(bagian) !== -1;
+      });
+    });
+  }
+
   /** Badge kecil untuk data yang belum berhasil disinkronkan. */
   function badgePending(item) {
     if (!item || !item._pending) return "";
@@ -230,6 +256,7 @@
     formatTanggalIndonesia: formatTanggalIndonesia,
     ringkasIsi: ringkasIsi,
     urutanKegiatan: urutanKegiatan,
+    cariKegiatan: cariKegiatan,
     renderTabelKegiatan: renderTabelKegiatan,
     renderKartuKegiatan: renderKartuKegiatan,
   };

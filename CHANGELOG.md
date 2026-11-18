@@ -73,3 +73,12 @@
 - Perbaikan: halaman Rekap Absensi sekarang memakai satu tabel di semua layar; tampilan mobile diperkecil agar seluruh kolom tetap terlihat tanpa kartu terpisah.
 - Dokumentasi: README diperbarui untuk mencantumkan modal hapus dan tabel rekap responsif.
 - Perbaikan: menambahkan 2 pengujian otomatis sehingga total menjadi 44 pengujian.
+
+## Versi 1.8.0 - 18 November 2026
+- Fitur: menambahkan kolom pencarian pada halaman Rekap Absensi untuk mencocokkan tanggal, nama siswa, kelas, dan status kehadiran.
+- Fitur: menambahkan kolom pencarian pada halaman Kegiatan untuk mencocokkan judul kumpulan, tanggal (mentah maupun format Indonesia), dan isi kegiatan.
+- Fitur: beberapa kata kunci harus semuanya cocok, pencarian tidak membedakan huruf besar/kecil, dan keterangan jumlah hasil ditampilkan di samping kolom pencarian.
+- Perbaikan: data lengkap disimpan terpisah dari hasil filter sehingga Export Dokumen tetap berisi seluruh rekap kegiatan dan menghapus kata kunci mengembalikan semua data.
+- Perbaikan: kolom pencarian ditata fleksibel berdampingan dengan label dan keterangan di laptop, serta bertumpuk penuh lebar di handphone tanpa membuat elemen offset.
+- Dokumentasi: README diperbarui untuk mencantumkan fitur pencarian rekap dan kegiatan.
+- Perbaikan: menambahkan 8 pengujian otomatis sehingga total menjadi 52 pengujian.

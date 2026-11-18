@@ -8,6 +8,71 @@
 // (dipakai oleh tabel_siswa, tabel_absensi, dan tabel_users).
 // ==========================================================
 
+// ---------- PENCARIAN REKAP ABSENSI ----------
+const NAMA_BULAN_REKAP = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+/** Ubah nilai apa pun menjadi teks aman untuk diproses. */
+function teksRekap(nilai) {
+  return nilai === null || nilai === undefined ? "" : String(nilai);
+}
+
+/** Ubah "2026-11-17" menjadi "17 November 2026". */
+function formatTanggalIndonesiaRekap(nilai) {
+  const bagian = teksRekap(nilai).slice(0, 10).split("-");
+  if (bagian.length !== 3) return "";
+
+  const index = Number(bagian[1]) - 1;
+  if (!bagian[0] || index < 0 || index > 11 || !bagian[2]) return "";
+  return Number(bagian[2]) + " " + NAMA_BULAN_REKAP[index] + " " + bagian[0];
+}
+
+/**
+ * Cari data rekap berdasarkan tanggal (mentah maupun format Indonesia),
+ * nama siswa, kelas, dan status kehadiran. Beberapa kata kunci harus
+ * semuanya cocok, sehingga pengguna bisa menggabungkan misalnya
+ * nama siswa dan status dalam satu pencarian.
+ */
+function cariRekapAbsensi(data, kataKunci) {
+  const daftar = Array.isArray(data) ? data.slice() : [];
+  const kunci = teksRekap(kataKunci).trim().toLowerCase();
+  const urutTanggal = (a, b) =>
+    teksRekap(b.tanggal_kegiatan).localeCompare(teksRekap(a.tanggal_kegiatan));
+
+  if (!kunci) return daftar.sort(urutTanggal);
+
+  const kata = kunci.split(/\s+/);
+  return daftar
+    .filter((item) => {
+      const siswa = item && item.tabel_siswa ? item.tabel_siswa : {};
+      const gabungan = [
+        item && item.tanggal_kegiatan,
+        formatTanggalIndonesiaRekap(item && item.tanggal_kegiatan),
+        siswa.nama_siswa,
+        siswa.kelas,
+        item && item.status_kehadiran,
+      ]
+        .map(teksRekap)
+        .join(" ")
+        .toLowerCase();
+
+      return kata.every((bagian) => gabungan.indexOf(bagian) !== -1);
+    })
+    .sort(urutTanggal);
+}
+
 // ---------- STATUS JARINGAN ----------
 function initNetworkStatus(elementId) {
   const el = document.getElementById(elementId);
@@ -60,4 +125,13 @@ function unduhExcel(namaFile, dataAbsensi) {
   ];
 
   XLSX.writeFile(workbook, namaFile);
+}
+
+// Ekspor untuk pengujian Node.js. Di browser fungsi di atas tetap
+// tersedia sebagai variabel global karena app.js dimuat sebagai script biasa.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    cariRekapAbsensi: cariRekapAbsensi,
+    formatTanggalIndonesiaRekap: formatTanggalIndonesiaRekap,
+  };
 }

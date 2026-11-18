@@ -33,10 +33,12 @@ Tampilannya dioptimalkan untuk handphone. Pada layar sempit, navigasi berubah me
 - Manajemen data siswa: tambah, ubah, dan hapus.
 - Input absensi harian beserta status kehadiran.
 - Rekap absensi yang tetap memakai tabel di laptop maupun handphone; di handphone tabel diperkecil agar semua kolom tetap terlihat.
+- Pencarian rekap berdasarkan tanggal, nama siswa, kelas, atau status kehadiran; beberapa kata kunci bisa digabung.
 
 ### Kegiatan kumpulan IRMA
 - Input kegiatan berisi judul kumpulan, tanggal kegiatan, dan isi kegiatan.
 - Daftar kegiatan diurutkan dari tanggal terbaru, tampil sebagai tabel di laptop dan kartu di handphone.
+- Pencarian kegiatan berdasarkan judul, tanggal, atau isi kegiatan; export dokumen tetap memakai seluruh rekap, bukan hanya hasil pencarian.
 - Aksi **Lihat**, **Edit**, dan **Hapus** melalui modal; modal hapus juga menyediakan tombol **Export Dokumen** untuk seluruh rekap kegiatan.
 - Ekspor rekap ke dokumen `.doc` yang kompatibel dengan Microsoft Word maupun Google Dokumen.
 - Salin format ke Google Dokumen langsung dari aplikasi.
@@ -84,7 +86,7 @@ absensi-irma/
 │   └── js/
 │       ├── supabase-client.js  Klien Supabase, proteksi halaman, logout
 │       ├── offline-store.js    Cache localStorage dan antrean sinkronisasi
-│       ├── app.js              Status jaringan dan bantuan export Excel
+│       ├── app.js              Status jaringan, pencarian rekap, dan export Excel
 │       ├── navbar.js           Penyusun tab bar dan dropdown "Lainnya"
 │       ├── kegiatan-logic.js   Validasi dan render data kegiatan
 │       ├── kegiatan-page.js    Penghubung form kegiatan dengan penyimpanan
@@ -118,7 +120,7 @@ Pengujian otomatis dijalankan dengan test runner bawaan Node.js:
 node --test tests/kegiatan.test.js tests/dokumen.test.js
 ```
 
-Cakupannya meliputi validasi form kegiatan, keamanan teks HTML, format tanggal, urutan data, rekap kehadiran, dokumen Proker, ringkasan dashboard, struktur halaman, dan tata letak tab bar responsif.
+Cakupannya meliputi validasi form kegiatan, keamanan teks HTML, format tanggal, urutan data, pencarian kegiatan dan rekap, rekap kehadiran, dokumen Proker, ringkasan dashboard, struktur halaman, dan tata letak tab bar responsif.
 
 ## Jenjang yang dipakai
 

@@ -12,6 +12,7 @@ const path = require("node:path");
 
 const Laporan = require("../assets/js/laporan-logic.js");
 const Logic = require("../assets/js/kegiatan-logic.js");
+const App = require("../assets/js/app.js");
 const akarProject = path.join(__dirname, "..");
 
 function bacaFile(relativePath) {
@@ -226,6 +227,67 @@ test("konversi tanggal ISO aman untuk timezone Indonesia", () => {
 
   // 17:30 UTC = 00:30 hari berikutnya di Indonesia.
   assert.equal(hasil, "9 November 2026");
+});
+
+// ---------- PENCARIAN REKAP ----------
+
+const rekapCariContoh = [
+  {
+    id: 1,
+    tanggal_kegiatan: "2026-11-17",
+    status_kehadiran: "Hadir",
+    tabel_siswa: { nama_siswa: "Budi", kelas: "XI RPL 1" },
+  },
+  {
+    id: 2,
+    tanggal_kegiatan: "2026-11-16",
+    status_kehadiran: "Alfa",
+    tabel_siswa: { nama_siswa: "Siti", kelas: "X PPLG 1" },
+  },
+];
+
+test("cariRekapAbsensi mencocokkan tanggal, nama, kelas, dan status", () => {
+  const cari = (kata) => App.cariRekapAbsensi(rekapCariContoh, kata).map((item) => item.id);
+
+  assert.deepEqual(cari("2026-11-17"), [1]);
+  assert.deepEqual(cari("17 November 2026"), [1]);
+  assert.deepEqual(cari("budi"), [1]);
+  assert.deepEqual(cari("RPL"), [1]);
+  assert.deepEqual(cari("alfa"), [2]);
+  assert.deepEqual(cari("HADIR"), [1]);
+});
+
+test("cariRekapAbsensi mengharuskan semua kata kunci cocok", () => {
+  const hasil = App.cariRekapAbsensi(rekapCariContoh, "Siti Alfa");
+  assert.deepEqual(hasil.map((item) => item.id), [2]);
+
+  assert.deepEqual(App.cariRekapAbsensi(rekapCariContoh, "Budi Alfa"), []);
+  assert.deepEqual(App.cariRekapAbsensi(rekapCariContoh, "  budi   hadir ").map((item) => item.id), [1]);
+});
+
+test("cariRekapAbsensi aman untuk data kosong dan tanpa kata kunci", () => {
+  assert.deepEqual(
+    App.cariRekapAbsensi(rekapCariContoh, "").map((item) => item.id),
+    [1, 2]
+  );
+  assert.deepEqual(App.cariRekapAbsensi(rekapCariContoh, "   ").map((item) => item.id), [1, 2]);
+  assert.deepEqual(App.cariRekapAbsensi(null, "budi"), []);
+  assert.deepEqual(App.cariRekapAbsensi([{ id: 3, tanggal_kegiatan: "2026-11-15" }], "budi"), []);
+  assert.equal(App.formatTanggalIndonesiaRekap("2026-11-17"), "17 November 2026");
+});
+
+test("halaman rekap menghubungkan kolom pencarian ke logika filter", () => {
+  const html = bacaFile("rekap.html");
+  const css = bacaFile("assets/css/style.css");
+
+  assert.equal(html.includes('id="cari-rekap"'), true);
+  assert.equal(html.includes('id="info-pencarian-rekap"'), true);
+  assert.equal(html.includes('type="search"'), true);
+  assert.equal(html.includes('addEventListener("input", renderRekap)'), true);
+  assert.equal(html.includes("cariRekapAbsensi(semuaRekapCache, kata)"), true);
+  assert.equal(html.includes("semuaRekapCache = absensi.map"), true);
+  assert.equal(css.includes(".kegiatan-cari,\n.rekap-cari {"), true);
+  assert.equal(css.includes(".kegiatan-input-cari,\n.rekap-cari input {"), true);
 });
 
 // ---------- STRUKTUR ANTARMUKA ----------

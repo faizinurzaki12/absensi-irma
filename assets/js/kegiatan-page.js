@@ -15,7 +15,12 @@
   var Logic = window.KegiatanLogic;
   var Laporan = window.LaporanLogic;
 
-  // Salinan data terakhir dipakai modal lihat/edit tanpa menaruh JSON di atribut HTML.
+  // Semua kegiatan dari penyimpanan dipakai export dokumen agar hasil
+  // pencarian tidak membatasi isi dokumen.
+  var semuaKegiatanCache = [];
+
+  // Salinan hasil pencarian yang sedang tampil, dipakai modal lihat/edit
+  // tanpa menaruh JSON di atribut HTML.
   var daftarKegiatanCache = [];
 
   // Id kegiatan yang sedang menunggu konfirmasi pada modal hapus.
@@ -69,27 +74,47 @@
     }
   }
 
-  /** Muat ulang daftar kegiatan dari cache/server lalu render. */
+  /** Muat ulang semua kegiatan dari cache/server lalu render hasil filter. */
   async function muatDaftarKegiatan() {
+    var data = typeof dbSelect === "function" ? await dbSelect("tabel_kegiatan") : [];
+    semuaKegiatanCache = Logic.urutanKegiatan(data || []);
+    renderDaftarKegiatan();
+  }
+
+  /** Render tabel dan kartu memakai kata kunci pencarian yang sedang aktif. */
+  function renderDaftarKegiatan() {
     var tbody = elemen("tabel-kegiatan-body");
     var kartu = elemen("kartu-kegiatan");
     var jumlah = elemen("jumlah-kegiatan");
+    var info = elemen("info-pencarian-kegiatan");
+    var kolomCari = elemen("cari-kegiatan");
     if (!tbody || !kartu) return;
 
-    var data = typeof dbSelect === "function" ? await dbSelect("tabel_kegiatan") : [];
-    var urut = Logic.urutanKegiatan(data || []);
-    daftarKegiatanCache = urut;
+    var kata = kolomCari ? kolomCari.value : "";
+    var sedangMencari = String(kata).trim().length > 0;
+    var hasil = Logic.cariKegiatan(semuaKegiatanCache, kata);
+    daftarKegiatanCache = hasil;
 
-    if (jumlah) jumlah.textContent = urut.length;
+    if (jumlah) jumlah.textContent = semuaKegiatanCache.length;
+    if (info) {
+      info.textContent = sedangMencari
+        ? hasil.length + " dari " + semuaKegiatanCache.length + " kegiatan cocok"
+        : "";
+      info.hidden = !sedangMencari;
+    }
 
-    if (urut.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="kegiatan-kosong">Belum ada kegiatan tersimpan.</td></tr>';
-      kartu.innerHTML = '<p class="kegiatan-kosong">Belum ada kegiatan tersimpan.</p>';
+    if (hasil.length === 0) {
+      var pesan =
+        semuaKegiatanCache.length === 0
+          ? "Belum ada kegiatan tersimpan."
+          : "Tidak ada kegiatan yang cocok dengan pencarian.";
+      tbody.innerHTML = '<tr><td colspan="4" class="kegiatan-kosong">' + pesan + "</td></tr>";
+      kartu.innerHTML = '<p class="kegiatan-kosong">' + pesan + "</p>";
       return;
     }
 
-    tbody.innerHTML = Logic.renderTabelKegiatan(urut);
-    kartu.innerHTML = Logic.renderKartuKegiatan(urut);
+    tbody.innerHTML = Logic.renderTabelKegiatan(hasil);
+    kartu.innerHTML = Logic.renderKartuKegiatan(hasil);
   }
 
   /** Cari kegiatan dari cache memakai id yang ada pada tombol aksi. */
@@ -131,7 +156,7 @@
 
   /** Susun dokumen Proker dari semua kegiatan yang tercatat. */
   function dokumenDariSemuaKegiatan() {
-    return Laporan.bangunDokumenProker(daftarKegiatanCache, { tahun: new Date().getFullYear() });
+    return Laporan.bangunDokumenProker(semuaKegiatanCache, { tahun: new Date().getFullYear() });
   }
 
   /** Ubah HTML dokumen menjadi teks biasa untuk clipboard fallback. */
@@ -325,6 +350,9 @@
       perbaruiInfoAntrean();
       await muatDaftarKegiatan();
     });
+
+    // Pencarian langsung memfilter tampilan tanpa memuat ulang data.
+    elemen("cari-kegiatan").addEventListener("input", renderDaftarKegiatan);
 
     // Tombol export dokumen: unduh .doc, salin ke Google Dokumen, atau keduanya.
     elemen("tombol-export-dokumen").addEventListener("click", unduhDokumenDoc);

@@ -61,6 +61,20 @@
         </div>
       </div>
 
+      <!-- PENCARIAN REKAP -->
+      <div class="bg-white rounded-2xl shadow border border-gray-100 p-4 mb-4">
+        <div class="rekap-cari">
+          <label for="cari-rekap">Cari Rekap</label>
+          <input
+            type="search"
+            id="cari-rekap"
+            placeholder="Cari tanggal, nama siswa, kelas, atau status..."
+            autocomplete="off"
+          />
+          <span id="info-pencarian-rekap" class="rekap-cari-info" hidden></span>
+        </div>
+      </div>
+
       <!-- TABEL REKAP: dipakai di laptop maupun handphone.
            Di handphone tabelnya diperkecil agar semua kolom tetap terlihat. -->
       <div class="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden">
@@ -95,6 +109,7 @@
         if (!session) return;
         initNetworkStatus("status-jaringan");
         perbaruiInfoAntrean();
+        document.getElementById("cari-rekap").addEventListener("input", renderRekap);
         await muatRekap();
       }
 
@@ -116,20 +131,39 @@
         Alfa: "bg-red-100 text-red-800",
       };
 
-      async function muatRekap() {
-        const tbody = document.getElementById("tabel-body");
+      // Data lengkap disimpan terpisah dari hasil filter agar pencarian
+      // hanya mengubah tampilan, bukan menghapus data asli.
+      let semuaRekapCache = [];
 
+      async function muatRekap() {
         const [absensi, siswa] = await Promise.all([dbSelect("tabel_absensi"), dbSelect("tabel_siswa")]);
 
         const petaSiswa = {};
         siswa.forEach((s) => (petaSiswa[s.id] = s));
 
-        const data = absensi
-          .map((a) => ({ ...a, tabel_siswa: petaSiswa[a.siswa_id] || null }))
-          .sort((a, b) => (b.tanggal_kegiatan || "").localeCompare(a.tanggal_kegiatan || ""));
+        semuaRekapCache = absensi.map((a) => ({ ...a, tabel_siswa: petaSiswa[a.siswa_id] || null }));
+        renderRekap();
+      }
 
-        if (!data || data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">Belum ada data absensi.</td></tr>`;
+      function renderRekap() {
+        const tbody = document.getElementById("tabel-body");
+        const info = document.getElementById("info-pencarian-rekap");
+        const kolomCari = document.getElementById("cari-rekap");
+        const kata = kolomCari ? kolomCari.value : "";
+        const sedangMencari = String(kata).trim().length > 0;
+        const data = cariRekapAbsensi(semuaRekapCache, kata);
+
+        if (info) {
+          info.textContent = sedangMencari ? `${data.length} dari ${semuaRekapCache.length} data cocok` : "";
+          info.hidden = !sedangMencari;
+        }
+
+        if (data.length === 0) {
+          const pesan =
+            semuaRekapCache.length === 0
+              ? "Belum ada data absensi."
+              : "Tidak ada data yang cocok dengan pencarian.";
+          tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">${pesan}</td></tr>`;
           return;
         }
 

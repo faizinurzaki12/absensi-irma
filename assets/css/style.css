@@ -917,6 +917,82 @@ body {
 }
 
 /* =========================================================
+   KOLOM PENCARIAN (HALAMAN REKAP DAN KEGIATAN)
+   Label, input, dan keterangan hasil berada dalam satu baris
+   yang fleksibel di laptop dan bertumpuk rapi di handphone.
+   ========================================================= */
+.kegiatan-cari,
+.rekap-cari {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 14px;
+}
+
+/* Kartu rekap sudah punya padding sendiri, jadi tidak perlu jarak tambahan. */
+.rekap-cari {
+  margin-bottom: 0;
+}
+
+.kegiatan-cari label,
+.rekap-cari label {
+  flex: 0 0 auto;
+  color: var(--warna-teks);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.kegiatan-input-cari,
+.rekap-cari input {
+  flex: 1 1 240px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--warna-teks);
+  font-family: inherit;
+  font-size: 13px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.kegiatan-input-cari::placeholder,
+.rekap-cari input::placeholder {
+  color: #9ca3af;
+}
+
+.kegiatan-input-cari:focus,
+.rekap-cari input:focus {
+  outline: none;
+  border-color: var(--hijau-utama);
+  box-shadow: 0 0 0 3px var(--hijau-garis);
+}
+
+.kegiatan-cari-info,
+.rekap-cari-info {
+  flex: 0 0 auto;
+  color: var(--warna-abu);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .kegiatan-cari label,
+  .rekap-cari label,
+  .kegiatan-cari-info,
+  .rekap-cari-info {
+    width: 100%;
+  }
+
+  .kegiatan-input-cari,
+  .rekap-cari input {
+    flex-basis: 100%;
+    width: 100%;
+  }
+}
+
+/* =========================================================
    TABEL REKAP ABSENSI (SEMUA UKURAN LAYAR)
    Tabel tetap dipakai di handphone, hanya diperkecil supaya
    kelima kolomnya masih bisa dibaca tanpa menyembunyikan data.

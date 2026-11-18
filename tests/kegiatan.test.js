@@ -141,6 +141,63 @@ test("renderKartuKegiatan menghasilkan kartu untuk layar HP", () => {
   assert.equal(html.includes("data-hapus-kegiatan=\"7\""), true);
 });
 
+// ---------- PENCARIAN KEGIATAN ----------
+
+const kegiatanCariContoh = [
+  {
+    id: 1,
+    judul_kumpulan: "Kumpulan Rutin November",
+    tanggal_kegiatan: "2026-11-17",
+    isi_kegiatan: "Mengaji bareng dan evaluasi absensi.",
+  },
+  {
+    id: 2,
+    judul_kumpulan: "Raker Pengurus",
+    tanggal_kegiatan: "2026-10-05",
+    isi_kegiatan: "Menyusun program kerja tahunan.",
+  },
+];
+
+test("cariKegiatan mencocokkan judul, isi, dan kedua format tanggal", () => {
+  const cari = (kata) => Logic.cariKegiatan(kegiatanCariContoh, kata).map((item) => item.id);
+
+  assert.deepEqual(cari("rutin"), [1]);
+  assert.deepEqual(cari("evaluasi"), [1]);
+  assert.deepEqual(cari("2026-10-05"), [2]);
+  assert.deepEqual(cari("5 Oktober 2026"), [2]);
+  assert.deepEqual(cari("RUTIN"), [1]);
+});
+
+test("cariKegiatan mengharuskan semua kata kunci cocok", () => {
+  assert.deepEqual(Logic.cariKegiatan(kegiatanCariContoh, "kumpulan evaluasi").map((item) => item.id), [1]);
+  assert.deepEqual(Logic.cariKegiatan(kegiatanCariContoh, "kumpulan program"), []);
+  assert.deepEqual(Logic.cariKegiatan(kegiatanCariContoh, "  Kumpulan   EVALUASI  ").map((item) => item.id), [1]);
+});
+
+test("cariKegiatan tanpa kata kunci mengembalikan semua data terurut", () => {
+  assert.deepEqual(Logic.cariKegiatan(kegiatanCariContoh, "").map((item) => item.id), [1, 2]);
+  assert.deepEqual(Logic.cariKegiatan(kegiatanCariContoh, "   ").map((item) => item.id), [1, 2]);
+  assert.deepEqual(Logic.cariKegiatan(null, ""), []);
+});
+
+test("halaman kegiatan menghubungkan kolom pencarian ke logika dan export penuh", () => {
+  const html = bacaFile("kegiatan.html");
+  const js = bacaFile("assets/js/kegiatan-page.js");
+  const css = bacaFile("assets/css/style.css");
+
+  assert.equal(html.includes('id="cari-kegiatan"'), true);
+  assert.equal(html.includes('id="info-pencarian-kegiatan"'), true);
+  assert.equal(html.includes('type="search"'), true);
+
+  assert.equal(js.includes("semuaKegiatanCache"), true);
+  assert.equal(js.includes("Logic.cariKegiatan(semuaKegiatanCache, kata)"), true);
+  assert.equal(js.includes('elemen("cari-kegiatan").addEventListener("input", renderDaftarKegiatan)'), true);
+  assert.equal(js.includes("Laporan.bangunDokumenProker(semuaKegiatanCache"), true);
+
+  assert.equal(css.includes(".kegiatan-cari,\n.rekap-cari {"), true);
+  assert.equal(css.includes(".kegiatan-input-cari,\n.rekap-cari input {"), true);
+});
+
 // ---------- STRUKTUR FILE & ANTARMUKA ----------
 
 test("halaman kegiatan tersedia tanpa Tailwind dan memuat field yang diminta", () => {
